@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_metadata_link">
+    <sys_metadata_link action="INSERT_OR_UPDATE">
+        <directory>update</directory>
+        <documentkey>9d22a620dbd8c300d6afffb41d961973</documentkey>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="x_snc_city_app_artifact">
+    <x_snc_city_app_artifact action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <animated_gif/>
+        <app display_value="Retail Banking">eebc42a5db7fb600c3beffa31d96197d</app>
+        <app_experience/>
+        <capability/>
+        <coupled_image_caption/>
+        <dev_experience/>
+        <display_layout>Text right Image left</display_layout>
+        <flip_image_sequence>false</flip_image_sequence>
+        <heading/>
+        <installation_details display_value="KB0010001">e3224c8edb0c8300d6afffb41d9619ca</installation_details>
+        <integrated_app_icon/>
+        <level>No code</level>
+        <media_type>GIF</media_type>
+        <number>AA0001008</number>
+        <order>100</order>
+        <persona>App Experience</persona>
+        <sys_created_by>michael.ritchie</sys_created_by>
+        <sys_created_on>2017-07-28 13:34:55</sys_created_on>
+        <sys_id>9d22a620dbd8c300d6afffb41d961973</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>michael.ritchie</sys_updated_by>
+        <sys_updated_on>2017-07-28 13:36:28</sys_updated_on>
+        <text/>
+        <type display_value="Installation">c9895d04db988300d6afffb41d961961</type>
+        <video_url/>
+    </x_snc_city_app_artifact>
+</record_update>
+]]></payload>
+        <sys_class_name>sys_metadata_link</sys_class_name>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2017-08-10 23:43:54</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>683aa7bcdb20c3008839f9b61d9619bc</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>AA0001008</sys_name>
+        <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+        <sys_update_name>sys_metadata_link_683aa7bcdb20c3008839f9b61d9619bc</sys_update_name>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2017-08-10 23:43:54</sys_updated_on>
+        <tablename>x_snc_city_app_artifact</tablename>
+    </sys_metadata_link>
+</record_update>

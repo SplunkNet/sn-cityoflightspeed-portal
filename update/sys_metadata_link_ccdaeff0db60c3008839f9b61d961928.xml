@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_metadata_link">
+    <sys_metadata_link action="INSERT_OR_UPDATE">
+        <directory>update</directory>
+        <documentkey>93250994dba08300d6afffb41d961905</documentkey>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="x_snc_city_learn_more_links">
+    <x_snc_city_learn_more_links action="INSERT_OR_UPDATE">
+        <app_artifact_type display_value="Automation">80585104db988300d6afffb41d961983</app_artifact_type>
+        <display_text>Learn about approvals</display_text>
+        <order>200</order>
+        <sys_created_by>sush.chandrashekar</sys_created_by>
+        <sys_created_on>2017-08-08 22:26:20</sys_created_on>
+        <sys_id>93250994dba08300d6afffb41d961905</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>sush.chandrashekar</sys_updated_by>
+        <sys_updated_on>2017-08-08 22:26:20</sys_updated_on>
+        <url>https://developer.servicenow.com/app.do#!/training/article/app_store_learn_path_build_app_istanbul_c_WorkflowsApprovals/app_store_learn_path_build_app_istanbul_t_ApproveWorkflow.dita?v=istanbul</url>
+    </x_snc_city_learn_more_links>
+</record_update>
+]]></payload>
+        <sys_class_name>sys_metadata_link</sys_class_name>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2017-08-10 23:46:35</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>ccdaeff0db60c3008839f9b61d961928</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Learn about approvals</sys_name>
+        <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+        <sys_update_name>sys_metadata_link_ccdaeff0db60c3008839f9b61d961928</sys_update_name>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2017-08-10 23:46:35</sys_updated_on>
+        <tablename>x_snc_city_learn_more_links</tablename>
+    </sys_metadata_link>
+</record_update>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_metadata_link">
+    <sys_metadata_link action="INSERT_OR_UPDATE">
+        <directory>update</directory>
+        <documentkey>6ae9b60cdbe3760087c1fd441d9619ca</documentkey>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="x_snc_city_app_repo">
+    <x_snc_city_app_repo action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <app display_value="Event Guide">a06fdf36db0b3e00c3beffa31d961993</app>
+        <short_description>Amazon Echo Integration</short_description>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2017-06-19 19:14:53</sys_created_on>
+        <sys_id>6ae9b60cdbe3760087c1fd441d9619ca</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2017-07-15 14:34:16</sys_updated_on>
+        <url>https://github.com/platform-experience/sn-cityoflightspeed-echo-integration.git</url>
+        <version>57598c38db27b60087c1fd441d96191b</version>
+    </x_snc_city_app_repo>
+</record_update>
+]]></payload>
+        <sys_class_name>sys_metadata_link</sys_class_name>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2017-08-10 23:45:43</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>db9ae370db60c3008839f9b61d961985</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Amazon Echo Integration</sys_name>
+        <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+        <sys_update_name>sys_metadata_link_db9ae370db60c3008839f9b61d961985</sys_update_name>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2017-08-10 23:45:43</sys_updated_on>
+        <tablename>x_snc_city_app_repo</tablename>
+    </sys_metadata_link>
+</record_update>

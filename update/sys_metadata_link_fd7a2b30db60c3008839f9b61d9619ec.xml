@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_metadata_link">
+    <sys_metadata_link action="INSERT_OR_UPDATE">
+        <directory>update</directory>
+        <documentkey>80585104db988300d6afffb41d961983</documentkey>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;record_update table="x_snc_city_app_artifacts_types"&gt;
+    &lt;x_snc_city_app_artifacts_types action="INSERT_OR_UPDATE"&gt;
+        &lt;app display_value="Retail Banking"&gt;eebc42a5db7fb600c3beffa31d96197d&lt;/app&gt;
+        &lt;description&gt;&lt;![CDATA[&lt;p&gt;Using the built-in drag and drop Visual Workflow Designer and Risk Assessment feature, the data driven process of determining a customer&amp;#39;s investor risk profile is automated based on specific information they provide in the guided investor questionnaire in the app.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;The Retail Banking application also utilizes data driven workflows to route the customer&amp;#39;s appointment scheduling request to the correct bank staff at the correct location. Accelerating the appointment assignment tasks, this powerful feature leads to desired business outcomes more efficiently.&lt;/p&gt;]]&gt;&lt;/description&gt;
+        &lt;gradient_end&gt;#b02324&lt;/gradient_end&gt;
+        &lt;gradient_start&gt;#ee3e3f&lt;/gradient_start&gt;
+        &lt;heading&gt;Automation For The People&lt;/heading&gt;
+        &lt;order&gt;100&lt;/order&gt;
+        &lt;short_description&gt;In the sample Retail Banking app, the typical bottlenecks of daily business operations are eliminated leveraging ServiceNow's Automated Workflows.&lt;/short_description&gt;
+        &lt;sys_created_by&gt;michael.ritchie&lt;/sys_created_by&gt;
+        &lt;sys_created_on&gt;2017-07-26 18:56:12&lt;/sys_created_on&gt;
+        &lt;sys_id&gt;80585104db988300d6afffb41d961983&lt;/sys_id&gt;
+        &lt;sys_mod_count&gt;4&lt;/sys_mod_count&gt;
+        &lt;sys_updated_by&gt;sush.chandrashekar&lt;/sys_updated_by&gt;
+        &lt;sys_updated_on&gt;2017-08-08 21:52:59&lt;/sys_updated_on&gt;
+        &lt;type&gt;Automation&lt;/type&gt;
+    &lt;/x_snc_city_app_artifacts_types&gt;
+&lt;/record_update&gt;
+</payload>
+        <sys_class_name>sys_metadata_link</sys_class_name>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2017-08-10 23:45:04</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>fd7a2b30db60c3008839f9b61d9619ec</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Automation</sys_name>
+        <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+        <sys_update_name>sys_metadata_link_fd7a2b30db60c3008839f9b61d9619ec</sys_update_name>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2017-08-10 23:45:04</sys_updated_on>
+        <tablename>x_snc_city_app_artifacts_types</tablename>
+    </sys_metadata_link>
+</record_update>

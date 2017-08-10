@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_metadata_link">
+    <sys_metadata_link action="INSERT_OR_UPDATE">
+        <directory>update</directory>
+        <documentkey>7a591d04db988300d6afffb41d96195b</documentkey>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;record_update table="x_snc_city_app_artifacts_types"&gt;
+    &lt;x_snc_city_app_artifacts_types action="INSERT_OR_UPDATE"&gt;
+        &lt;app display_value="Retail Banking"&gt;eebc42a5db7fb600c3beffa31d96197d&lt;/app&gt;
+        &lt;description&gt;&lt;![CDATA[&lt;p&gt;Leveraging the design and development tools in ServiceNow&amp;#39;s ServicePortal provides a platform to give your customers the apps they want. ServiceNow&amp;#39;s platform helps companies leverage custom app design, modern UX and UI design, and deliver high-tech digital experiences.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Using the ServiceNow Platform, businesses can design mobile apps with enhanced experiences that help companies do better business. Designing applications around the people who use it, astounding things happen. Adoption goes up, risk goes down, and companies achieve business value faster.&lt;/p&gt;]]&gt;&lt;/description&gt;
+        &lt;gradient_end&gt;#014a13&lt;/gradient_end&gt;
+        &lt;gradient_start&gt; #006719&lt;/gradient_start&gt;
+        &lt;heading&gt;Experience&lt;/heading&gt;
+        &lt;order&gt;400&lt;/order&gt;
+        &lt;short_description&gt;Employees in enterprises as well as business customers have come to expect great experiences in the apps they use today. Delivering application experiences that users love matter more than ever&lt;/short_description&gt;
+        &lt;sys_created_by&gt;michael.ritchie&lt;/sys_created_by&gt;
+        &lt;sys_created_on&gt;2017-07-26 18:59:56&lt;/sys_created_on&gt;
+        &lt;sys_id&gt;7a591d04db988300d6afffb41d96195b&lt;/sys_id&gt;
+        &lt;sys_mod_count&gt;2&lt;/sys_mod_count&gt;
+        &lt;sys_updated_by&gt;sush.chandrashekar&lt;/sys_updated_by&gt;
+        &lt;sys_updated_on&gt;2017-08-08 21:54:57&lt;/sys_updated_on&gt;
+        &lt;type&gt;Experience&lt;/type&gt;
+    &lt;/x_snc_city_app_artifacts_types&gt;
+&lt;/record_update&gt;
+</payload>
+        <sys_class_name>sys_metadata_link</sys_class_name>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2017-08-10 23:45:02</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>4d7a2b30db60c3008839f9b61d9619ea</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Experience</sys_name>
+        <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+        <sys_update_name>sys_metadata_link_4d7a2b30db60c3008839f9b61d9619ea</sys_update_name>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2017-08-10 23:45:02</sys_updated_on>
+        <tablename>x_snc_city_app_artifacts_types</tablename>
+    </sys_metadata_link>
+</record_update>
