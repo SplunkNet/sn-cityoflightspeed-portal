@@ -47,8 +47,8 @@
         <sys_class_name>sys_dictionary</sys_class_name>
         <sys_created_by>chuck.tomasi</sys_created_by>
         <sys_created_on>2017-06-30 16:55:02</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
-        <sys_id>6b63cb23db2bf200c3beffa31d96196b</sys_id>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>55edab9cdbc8cb0087c1fd441d96196b</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>Architecture heading</sys_name>
         <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
@@ -56,8 +56,8 @@
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
         <sys_update_name>sys_dictionary_x_snc_city_app_architecture_heading</sys_update_name>
-        <sys_updated_by>chuck.tomasi</sys_updated_by>
-        <sys_updated_on>2017-06-30 16:55:02</sys_updated_on>
+        <sys_updated_by>system</sys_updated_by>
+        <sys_updated_on>2017-07-15 14:11:52</sys_updated_on>
         <table_reference>false</table_reference>
         <text_index>false</text_index>
         <unique>false</unique>

@@ -5,11 +5,21 @@
         <element label="Animated GIF" max_length="40" name="animated_gif" type="user_image"/>
         <element label="App" max_length="32" name="app" reference="x_snc_city_app" type="reference"/>
         <element label="App experience" max_length="40" name="app_experience" type="user_image"/>
-        <element label="Background Gradient1" max_length="40" name="background_gradient1" type="color"/>
-        <element label="&#9; Background Gradient2" max_length="40" name="background_gradient2" type="color"/>
         <element label="Capability" max_length="40" name="capability" type="string"/>
+        <element label="Coupled Image caption" max_length="200" name="coupled_image_caption" type="string"/>
         <element label="Dev experience" max_length="40" name="dev_experience" type="user_image"/>
+        <element choice="3" default="Text right Image left" label="Display Layout" max_length="40" name="display_layout" type="choice">
+            <choice>
+                <element hint="Render Image/video as full width, with text description on top of it" label="Text Top Image Bottom" sequence="100" value="Text Top Image Bottom"/>
+                <element hint="Render Image/video as full width, with text description on bottom of it" label="Top Image text Bottom" sequence="100" value="Top Image text Bottom"/>
+                <element hint="Integration Display With App icon and integration text on right. Images below this." label="Integration Display With App icon" sequence="200" value="Integration Display With App icon"/>
+                <element hint="Render Image/video side by side with text description on left" label="Text left Image right" sequence="300" value="Text left Image right"/>
+            </choice>
+        </element>
+        <element label="Flip Image Sequence" max_length="40" name="flip_image_sequence" type="boolean"/>
         <element attributes="edge_encryption_enabled=true" label="Heading" max_length="40" name="heading" type="string"/>
+        <element label="Installation Details" max_length="32" name="installation_details" reference="kb_knowledge" type="reference"/>
+        <element label="Integrated App Icon" max_length="40" name="integrated_app_icon" type="user_image"/>
         <element attributes="edge_encryption_enabled=true" choice="3" default="No code" label="Level" max_length="40" name="level" type="string">
             <choice>
                 <element label="No code" sequence="0" value="No code"/>
@@ -31,18 +41,17 @@
                 <element label="Dev Experience" sequence="1" value="Dev Experience"/>
             </choice>
         </element>
-        <element label="Text" mandatory="true" max_length="1000" name="text" type="string"/>
-        <element choice="1" label="Type" mandatory="true" max_length="40" name="type" type="choice">
-            <choice>
-                <element label="Automation" sequence="0" value="Automation"/>
-                <element label="Integration" sequence="1" value="Integration"/>
-                <element label="Experience" sequence="2" value="Experience"/>
-                <element label="Insight" sequence="3" value="Insight"/>
-            </choice>
-        </element>
+        <element label="Text" max_length="1000" name="text" type="string"/>
+        <element attributes=" ref_ac_columns_search=true,ref_auto_completer=AJAXTableCompleter,ref_ac_columns=app" label="Type" mandatory="true" max_length="32" name="type" reference="x_snc_city_app_artifacts_types" type="reference"/>
         <element label="Video URL" max_length="1024" name="video_url" type="url"/>
         <index name="index">
             <element name="app"/>
+        </index>
+        <index name="index2">
+            <element name="installation_details"/>
+        </index>
+        <index name="index3">
+            <element name="type"/>
         </index>
     </element>
 </database>

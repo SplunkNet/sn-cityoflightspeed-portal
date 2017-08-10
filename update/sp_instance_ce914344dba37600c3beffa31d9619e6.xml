@@ -11,11 +11,11 @@
         <short_description/>
         <size>md</size>
         <sp_column display_value="1">43ffb204dba37600c3beffa31d96199f</sp_column>
-        <sp_widget display_value="COLS Artifacts">61600b04dba37600c3beffa31d9619e8</sp_widget>
+        <sp_widget display_value="xCOLS Artifacts">61600b04dba37600c3beffa31d9619e8</sp_widget>
         <sys_class_name>sp_instance</sys_class_name>
         <sys_created_by>sush.chandrashekar</sys_created_by>
         <sys_created_on>2017-06-19 19:48:16</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>ce914344dba37600c3beffa31d9619e6</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name/>

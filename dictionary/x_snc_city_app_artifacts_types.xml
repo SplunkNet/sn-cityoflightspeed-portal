@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element label="App artifacts types" max_length="40" name="x_snc_city_app_artifacts_types" type="collection">
+        <element label="App" max_length="32" name="app" reference="x_snc_city_app" type="reference"/>
+        <element label="Description" max_length="1000" name="description" type="html"/>
+        <element label="Gradient End" max_length="40" name="gradient_end" type="color"/>
+        <element label="Gradient Start" max_length="40" name="gradient_start" type="color"/>
+        <element label="Heading" max_length="100" name="heading" type="string"/>
+        <element label="Order" max_length="40" name="order" type="integer"/>
+        <element label="Short Description" max_length="1000" name="short_description" type="string"/>
+        <element choice="1" display="true" label="Type" max_length="40" name="type" type="choice">
+            <choice>
+                <element label="Automation" sequence="100" value="Automation"/>
+                <element label="Integration" sequence="200" value="Integration"/>
+                <element label="Experience" sequence="300" value="Experience"/>
+                <element label="Insight" sequence="400" value="Insight"/>
+                <element label="Architecture" sequence="500" value="Architecture"/>
+                <element label="Installation" sequence="600" value="Installation"/>
+            </choice>
+        </element>
+        <index name="index">
+            <element name="app"/>
+        </index>
+    </element>
+</database>

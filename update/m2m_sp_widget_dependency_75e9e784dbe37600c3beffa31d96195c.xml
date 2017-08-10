@@ -2,11 +2,11 @@
 <record_update table="m2m_sp_widget_dependency">
     <m2m_sp_widget_dependency action="INSERT_OR_UPDATE">
         <sp_dependency display_value="trustUrl ">d4e9e784dbe37600c3beffa31d961985</sp_dependency>
-        <sp_widget display_value="COLS Artifacts">61600b04dba37600c3beffa31d9619e8</sp_widget>
+        <sp_widget display_value="xCOLS Artifacts">61600b04dba37600c3beffa31d9619e8</sp_widget>
         <sys_class_name>m2m_sp_widget_dependency</sys_class_name>
         <sys_created_by>sush.chandrashekar</sys_created_by>
         <sys_created_on>2017-06-19 22:44:23</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>75e9e784dbe37600c3beffa31d96195c</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>trustUrl .COLS Artifacts</sys_name>

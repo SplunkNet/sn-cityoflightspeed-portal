@@ -33,10 +33,20 @@
 							if(temp.src == undefined)
 								temp.src = $(element).attr('ng-src');
 
-							if (!w)
+							if (!w){
 								w = temp.width;
-							if (!h)
+									if(!w){
+										w = 1600;
+									}
+								}
+								
+							if (!h){
 								h = temp.height;
+								if(!h){
+										h = 1268;
+								}
+							}
+								
 						}
 						
 						var wPercent = $(element).width()/100,
@@ -75,7 +85,7 @@
         <sys_created_on>2017-06-28 01:01:20</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>006551b2db67b20087c1fd441d9619b1</sys_id>
-        <sys_mod_count>0</sys_mod_count>
+        <sys_mod_count>3</sys_mod_count>
         <sys_name>rwdimgmap</sys_name>
         <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
         <sys_policy/>
@@ -83,7 +93,7 @@
         <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
         <sys_update_name>sp_angular_provider_006551b2db67b20087c1fd441d9619b1</sys_update_name>
         <sys_updated_by>sush.chandrashekar</sys_updated_by>
-        <sys_updated_on>2017-06-28 01:01:20</sys_updated_on>
+        <sys_updated_on>2017-08-10 00:19:34</sys_updated_on>
         <type>directive</type>
     </sp_angular_provider>
 </record_update>

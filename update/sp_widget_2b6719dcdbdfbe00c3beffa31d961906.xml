@@ -89,7 +89,7 @@
         <id>cols-development-categories</id>
         <internal>false</internal>
         <link/>
-        <name>COLS Development Categories</name>
+        <name>xCOLS Development Categories</name>
         <option_schema/>
         <public>false</public>
         <roles/>
@@ -104,15 +104,15 @@
         <sys_created_on>2017-06-07 20:31:44</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>2b6719dcdbdfbe00c3beffa31d961906</sys_id>
-        <sys_mod_count>70</sys_mod_count>
-        <sys_name>COLS Development Categories</sys_name>
+        <sys_mod_count>71</sys_mod_count>
+        <sys_name>xCOLS Development Categories</sys_name>
         <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
         <sys_update_name>sp_widget_2b6719dcdbdfbe00c3beffa31d961906</sys_update_name>
         <sys_updated_by>sush.chandrashekar</sys_updated_by>
-        <sys_updated_on>2017-06-09 19:39:48</sys_updated_on>
+        <sys_updated_on>2017-07-19 00:43:37</sys_updated_on>
         <template><![CDATA[<div class="text-center dev-cetegories">
     <!-- your widget template -->
     <div class="boxes">

@@ -1,146 +1,202 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
-        <client_script><![CDATA[function appdetail($rootScope, $location) {
+        <client_script><![CDATA[function appdetail($rootScope, $location, $window, $timeout, $sce) {
     /* widget controller */
     var c = this;
-    c.activeButton = "";
-    c.showVideo = false;
-    c.searchObject = $location.search();
-    c.tourVideo = document.getElementById("tourVideo");
-    c.developSlideShow = false;
-    c.mobileSlideShow = [{
-            type: 'explainKeyTerms',
-            devtype: 'experience'
-        },
-        {
-            type: 'explainKeyTerms',
-            devtype: 'automation'
-        },
-        {
-            type: 'explainKeyTerms',
-            devtype: 'integration'
-        }, {
-            type: 'explainKeyTerms',
-            devtype: 'insight'
-        }, {
-            type: 'appRelatedStuff',
-            devtype: 'architecture'
-        }, {
-            type: 'appRelatedStuff',
-            devtype: 'repositories'
-        }
-    ];
 
-    c.tourVideo.onwaiting = function() {
-        console.log('waiting for video');
-    };
-    if (c.searchObject.sys_id) {
+    c.showVideo = false;
+    $rootScope.userSelectedArtifact = '';
+    c.searchObject = $location.search();
+
+    c.tourVideo = document.getElementById("tourVideo");
+    c.tourVideoMobile = document.getElementById("mobiletourVideo");
+    $rootScope.startDetailDisplay = false;
+    c.artifactsSimpleArray = [];
+    c.appRepos = [];
+
+
+
+    if (c.searchObject.sys_id && c.searchObject.artifact_type) {
+        $rootScope.userSelectedArtifact = c.searchObject.artifact_type;
+        getAppData(c.searchObject.sys_id);
+        getArtifactDetails(c.searchObject.sys_id, c.searchObject.artifact_type);
+        $rootScope.$broadcast('appChanged', c.searchObject);
+        //  $rootScope.startDetailDisplay = true;
+        // initializeStateSelector();
+
+    } else if (c.searchObject.sys_id) {
+        $rootScope.startDetailDisplay = false;
         getAppData(c.searchObject.sys_id);
     }
-    $rootScope.$on('showAppDetail', function(event, data) {
 
+
+    $rootScope.$on('showAppDetail', function(event, data) {
+        //$rootScope.startDetailDisplay = false;
+        $rootScope.userSelectedArtifact = '';
+        c.searchObject = $location.search();
+        $rootScope.$broadcast('appChanged', c.searchObject);
         getAppData(data);
-        //c.showDetails = true;
+        // if (c.data.appData && c.data.appData.name.display_value) {
+        //     $window.location.href = "/city?sys_id=" + c.searchObject.sys_id;
+        // } else {
+        //     getAppData(data);
+        // }
+
+        $rootScope.showDetail = true;
 
     });
 
+    $rootScope.$on('showArtifactDetails', function(event, data) {
+        $timeout(function() {
+            $rootScope.userSelectedArtifact = data.artifact_type;
+        });
+        c.searchObject = $location.search();
+        getAppData(data.sys_id);
+        getArtifactDetails(data.sys_id, data.artifact_type);
 
+        // $rootScope.showDetail = true;
+    });
+
+    c.hideDetail = function() {
+        $rootScope.userSelectedArtifact = "";
+        angular.element('.banner-encloser').scrollTop(0);
+        $rootScope.startDetailDisplay = false;
+        $rootScope.$broadcast('hideDetail', '');
+    }
 
     function getAppData(sysID) {
         $rootScope.showDetail = true;
         c.server.get({ action: 'getAppData', sysid: sysID }).then(function(response) {
             console.log(response);
-            c.data.appData = response.data.appData;
-            c.data.appArtifacts = response.data.appArtifacts;
-            c.data.appRepos = response.data.appRepos;
-            c.centerImage = c.data.appData.screenshot.display_value;
-
-            var obj = {};
-            obj.head = c.data.appData.name.display_value;
-            obj.description = c.data.appData.description.display_value;
-            obj.background_gradient1 = c.data.appData.app_gradient_1.display_value;
-            obj.background_gradient2 = c.data.appData.app_gradient_2.display_value;
-            $rootScope.$broadcast('switchLayer', obj);
+            $timeout(function() {
+                c.data.appData = response.data.appData;
+                c.data.appArtifacts = response.data.appArtifacts;
+                c.centerImage = c.data.appData.screenshot.display_value;
+                if ($rootScope.userSelectedArtifact) {
+                    $rootScope.startDetailDisplay = true;
+                    initializeStateSelector();
+                }
+            });
 
         });
     }
-    c.showAppTour = function() {
 
-        c.tourVideo.play();
-        c.showVideo = true;
-        c.showLive = false;
+    function getArtifactDetails(sysID, artifactType) {
+
+        c.server.get({ action: 'getArtifactDetails', sysid: sysID, artifact_type: artifactType }).then(function(response) {
+
+            console.log('artifactdata');
+            console.log(response);
+            $timeout(function() {
+                c.data.selectedArtifact = response.data.selectedArtifact;
+                c.data.selectedArtifact.description.display_value = $sce.trustAsHtml(c.data.selectedArtifact.description.display_value);
+                if ($rootScope.userSelectedArtifact == 'Installation') {
+                    c.html = $sce.trustAsHtml(c.data.selectedArtifact.artifacts[0].html);
+                    c.appRepos = response.data.selectedArtifact.appRepos;
+                }
+            });
+
+
+        });
     }
 
-    c.showLiveApp = function() {
-        c.tourVideo.pause();
-        c.showVideo = false;
-        c.showLive = true;
+    c.showAppTour = function(device) {
+        if (device == 'desktop') {
+            c.tourVideo.play();
+            c.showVideo = true;
+            c.showLive = false;
+        } else {
+            c.tourVideoMobile.play();
+            c.showVideo = true;
+            c.showLive = false;
+        }
+
+
     }
-    c.showDevDetails = function(type, devtype) {
+
+    c.selectArtifact = function(artifact, index) {
+        ///city?sys_id={{eachApp.sys_id}}&artifact_type={{eachartifact.value}}
+        console.log();
+        c.state = index + 1;
+        $location.url("/city?sys_id=" + c.searchObject.sys_id + "&artifact_type=" + artifact.value);
+        $location.url
+    };
+
+    $rootScope.$on('selectTheAppFromSideNav', function(event, data) {
         //debugger;
-        c.displayDevDetails = true;
-        if (type == 'explainKeyTerms') {
-            c.devtype = devtype;
-            c.detailType = type;
-            c.displayData = c.data.appArtifacts[devtype];
-            c.bgGradient = {};
-            c.bgGradient.background_gradient1 = c.displayData[0].background_gradient1.display_value;
-            c.bgGradient.background_gradient2 = c.displayData[0].background_gradient2.display_value;
-            c.displayGif = c.displayData[0].dev_experience.display_value;
-            c.displayStatic = c.displayData[0].app_experience.display_value;
-            var obj = {};
-            obj.head = c.displayData[0].heading.display_value;
-            obj.description = c.displayData[0].text.display_value;
-            obj.background_gradient1 = c.displayData[0].background_gradient1.display_value;
-            obj.background_gradient2 = c.displayData[0].background_gradient2.display_value;
-            $rootScope.$broadcast('switchLayer', obj);
-        } else if (type == 'appRelatedStuff') {
-            c.appRelatedType = devtype;
-            c.detailType = type;
-            c.bgGradient = {};
-            c.bgGradient.background_gradient1 = "#4a4a4a";
-            c.bgGradient.background_gradient2 = "#333232";
-            if (devtype == 'architecture') {
-                c.architectureImage = c.data.appData.architecture_image.display_value;
-                var obj = {};
-                obj.head = c.data.appData.architecture_heading.display_value;
-                obj.description = c.data.appData.architecture_text.display_value;
-                obj.background_gradient1 = c.bgGradient.background_gradient1;
-                obj.background_gradient2 = c.bgGradient.background_gradient2;
-                $rootScope.$broadcast('switchLayer', obj);
+        c.selectArtifact(data.artifact, data.index);
 
-            }
-            if (devtype == 'repositories') {
-
-                var obj = {};
-                obj.head = c.data.appData.repositories_heading.display_value;
-                obj.description = c.data.appData.repositories_text.display_value;
-                obj.background_gradient1 = c.bgGradient.background_gradient1;
-                obj.background_gradient2 = c.bgGradient.background_gradient2;
-                $rootScope.$broadcast('switchLayer', obj);
-
-            }
-
-        }
-
-        function changeTheBottomData(data) {
-
-        }
-
-        console.log(c.displayData);
-
-        //'explainKeyTerms', 'automation'
+    });
+    c.learnToBuild = function() {
+        $rootScope.startDetailDisplay = true;
+        initializeStateSelector();
     }
-    c.switchImage = function(eachData) {
-        c.displayGif = eachData.dev_experience.display_value;
-        c.displayStatic = eachData.app_experience.display_value;
-        var obj = {};
-        obj.head = eachData.heading.display_value;
-        obj.description = eachData.text.display_value;
-        obj.background_gradient1 = eachData.background_gradient1.display_value;
-        obj.background_gradient2 = eachData.background_gradient2.display_value;
-        $rootScope.$broadcast('switchLayer', obj);
+    c.nextState = function() {
+        //debugger;
+        angular.element('.banner-encloser').scrollTop(0);
+        $location.url("/city?sys_id=" + c.searchObject.sys_id + "&artifact_type=" + c.stateTracker[++c.state].value);
+    }
+
+    c.previousState = function() {
+        angular.element('.banner-encloser').scrollTop(0);
+        if (c.state > 1) {
+            $location.url("/city?sys_id=" + c.searchObject.sys_id + "&artifact_type=" + c.stateTracker[--c.state].value);
+        } else if (c.state == 1) {
+            c.state = 0;
+            $rootScope.userSelectedArtifact = "";
+            $rootScope.startDetailDisplay = true;
+            $location.url("/city?sys_id=" + c.searchObject.sys_id);
+
+        }
+
+
+    }
+
+    function initializeStateSelector() {
+
+        c.currentArtifact = [];
+        c.stateTracker = [];
+        for (var i = 0; i < c.data.appArtifacts.length; i++) {
+            if (c.data.appArtifacts[i].sys_id == c.searchObject.sys_id) {
+                c.currentArtifact = c.data.appArtifacts[i].artifacts;
+                angular.copy(c.data.appArtifacts[i].artifacts, c.stateTracker);
+            }
+        }
+        var learnToBuildObj = {
+            'gradient1': '#4780CE',
+            'gradient2': '#4780CE',
+            'label': 'Learn to build',
+            'value': 'Learn to build'
+
+        }
+        c.stateTracker.splice(0, 0, learnToBuildObj);
+        if ($rootScope.userSelectedArtifact) {
+            for (var j = 0; j < c.stateTracker.length; j++) {
+                if (c.stateTracker[j].value == $rootScope.userSelectedArtifact) {
+                    c.state = j;
+                }
+            }
+        } else {
+            c.state = 0;
+        }
+    };
+
+
+    c.showLiveApp = function(device) {
+        if (device == 'desktop') {
+            c.tourVideo.pause();
+            c.showLive = true;
+            c.showVideo = false;
+
+        } else {
+            c.tourVideoMobile.pause();
+            c.showVideo = false;
+
+            window.open(c.data.appData.path.display_value, '_blank');
+            win.focus();
+        }
+
     }
 
     c.startMobileSlideShow = function() {
@@ -149,416 +205,1696 @@
         c.developSlideShow = true;
         c.showDevDetails(c.mobileSlideShow[c.slideIndex].type, c.mobileSlideShow[c.slideIndex].devtype);
     }
-    c.nextSlide = function() {
-        //debugger;
-        c.showDevDetails(c.mobileSlideShow[++c.slideIndex].type, c.mobileSlideShow[c.slideIndex].devtype);
-    }
 
-    c.previousSlide = function() {
-        c.showDevDetails(c.mobileSlideShow[--c.slideIndex].type, c.mobileSlideShow[c.slideIndex].devtype);
-
-    }
 }]]></client_script>
         <controller_as>c</controller_as>
-        <css>.app-details {
-    height: 100%;
-    .flex-these {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        @media screen and (max-width: 414px) {
-            padding: 10px;
+        <css>    $btn-launch-color:#4780CE;
+    .Automation-gradient {
+        background-image: linear-gradient(to left, #ee3e3f, #791717);
+        opacity: 1 !important;
+    }
+    
+    .Integration-gradient {
+        background-image: linear-gradient(to left, #1d5083, #08325c);
+        opacity: 1 !important;
+    }
+    
+    .Experience-gradient {
+        background-image: linear-gradient(to left, #006719, #014a13);
+        opacity: 1 !important;
+    }
+    
+    .Insight-gradient {
+        background-image: linear-gradient(to left, #722779, #511357);
+        opacity: 1 !important;
+    }
+    
+    .Architecture-gradient,
+    .Installation-gradient {
+        background-image: linear-gradient(to bottom, #768490, #252b2f);
+        opacity: 1 !important;
+    }
+    
+    .Automation-gradient-pill {
+        background-image: linear-gradient(to bottom, #ee3e3f, #791717);
+        opacity: 1 !important;
+    }
+    
+    .Integration-gradient-pill {
+        background-image: linear-gradient(to bottom, #1d5083, #08325c);
+        opacity: 1 !important;
+    }
+    
+    .Experience-gradient-pill {
+        background-image: linear-gradient(to bottom, #006719, #014a13);
+        opacity: 1 !important;
+    }
+    
+    .Insight-gradient-pill {
+        background-image: linear-gradient(to bottom, #722779, #511357);
+        opacity: 1 !important;
+    }
+    
+    .Architecture-gradient-pill,
+    .Installation-gradient-pill {
+        background-image: linear-gradient(to bottom, #768490, #252b2f);
+        opacity: 1 !important;
+    }
+    
+    .translatez-for-sidebar {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+    /*content display css*/
+    
+    .list-them {
+        padding-left: 10px;
+        p {
+            opacity: .8 !important;
+            font-size: 24px !important;
+            margin-top: 20px !important;
+            margin-bottom: 20px !important;
+            font-weight: 300 !important;
+            list-style: disc inside none !important;
+            display: list-item !important;
+            @media screen and (max-width: 769px) {
+                font-size: 15px !important;
+            }
         }
     }
-    .main-div {
-        height: 85%;
-        position: relative;
-        .image-switcher-arrows {
-            position: absolute;
-            width: 100%;
-            display: flex;
-            z-index: 1400;
-            align-items: center;
-            justify-content: space-between;
-            bottom: -2%;
-            img {
-                padding: 20px;
-                &amp;.disabled {
-                    pointer-events: none;
-                    opacity: .2;
-                }
-            }
-            img.rotate {
-                -ms-transform: rotate(180deg);
-                /* IE 9 */
-                -webkit-transform: rotate(180deg);
-                /* Chrome, Safari, Opera */
-                transform: rotate(180deg);
+    
+    .each-repo {
+        padding-left: 10px;
+        font-size: 24px;
+        //margin-top: 20px;
+        margin-bottom: 10px;
+        font-weight: 300;
+        list-style: disc inside none;
+        display: list-item;
+        @media screen and (max-width: 414px) {
+            font-size: 15px;
+        }
+    }
+    
+    .side-bar {
+        //opacity: 0.16;
+        position: fixed;
+        right: -150%;
+        padding: 0px;
+        //background-image: linear-gradient(to top, rgba(0, 0, 0, 0.8), #000000);
+        //background-image: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8));
+        background-image: linear-gradient(to top, rgba(100, 134, 229, 0.16), rgba(0, 0, 0, .16));
+        transition: right 2s;
+        // top: 70px;
+        top: 73px;
+        &amp;.show-side-bar {
+            transition: right 2s;
+            right: 15px;
+            @media screen and (max-height: 700px) {
+                overflow: auto;
             }
         }
-        .app-related-data {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            .architecture-image {
-                width: 100%;
-                height: 95%;
-                position: relative;
-                img {
-                    height: 95%;
-                    @media screen and (max-width: 1220px) {
-                        width: 100%;
-                        height: auto;
+        .names {
+            padding-left: 20px;
+            text-align: left;
+            .app-name-collapse {
+                display: flex;
+                align-content: center;
+                justify-content: space-between;
+                margin-right: 20px;
+                padding: 10px 10px 10px 0px;
+                &amp;.active {
+                    color: #fff;
+                    img {
+                        height: 20px;
+                        -ms-transform: rotate(-90deg) !important;
+                        /* IE 9 */
+                        -webkit-transform: rotate(-90deg) !important;
+                        /* Chrome, Safari, Opera */
+                        transform: rotate(-90deg) !important;
                     }
-                }
-                .divider {
-                    position: absolute;
-                    bottom: 0px;
-                    left: 0px;
-                    width: 100%;
-                    text-align: left;
-                    border-top: 2px solid #4a4a4a;
-                    padding: 10px;
-                    @media screen and (max-width: 1220px) {
-                        bottom: -41px;
-                    }
-                    a {
-                        color: #979797;
-                        margin: 10px;
-                        img {
-                            width: 32px;
+                    a.app-name {
+                        color: #fff;
+                        opacity: 1;
+                        &amp;:hover {
+                            color: #fff;
+                            background-color: rgba(0, 0, 0, .1);
+                            opacity: .2;
                         }
                     }
                 }
-            }
-            .repo-holder {
-                padding: 20px;
-                font-size: 22px;
-                @media screen and (max-width: 414px) {
-                    font-size: 14px;
+                img {
+                    height: 20px;
+                    -ms-transform: rotate(90deg);
+                    /* IE 9 */
+                    -webkit-transform: rotate(90deg);
+                    /* Chrome, Safari, Opera */
+                    transform: rotate(90deg);
                 }
-                .divider {
-                    position: absolute;
-                    bottom: 0px;
-                    left: 0px;
+                a.app-name {
+                    margin: 0px;
+                    font-size: 22px;
+                    opacity: 0.5;
+                    color: #fff;
+                    font-weight: 300;
+                    &amp;:hover {
+                        color: #fff;
+                        background-color: rgba(0, 0, 0, .1);
+                        opacity: .2;
+                    }
+                }
+            }
+            .artifatcs-list {
+                background-image: linear-gradient(to left, #303D62, #2A3658);
+                margin-left: -20px;
+                padding: 0px;
+                //margin-right: 15px;
+                .each-artifact-type {
+                    height: 50px;
                     width: 100%;
-                    text-align: left;
-                    border-top: 2px solid #4a4a4a;
-                    padding: 10px;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    border-bottom: 1px solid rgb(50, 66, 110);
+                    .desktop-pill {
+                        height: 100%;
+                        width: 15px;
+                    }
                     a {
-                        color: #979797;
+                        color: #fff;
+                        font-size: 18px;
+                        padding-left: 30px;
+                        font-weight: 300;
                     }
                 }
-                .each-repo {
-                    padding: 10px;
-                    a {
-                        color: #4990e2;
+                .Automation-gradient {
+                    background-image: linear-gradient(to left, #ee3e3f, #791717);
+                    opacity: 1 !important;
+                }
+                .Integration-gradient {
+                    background-image: linear-gradient(to left, #1d5083, #08325c);
+                    opacity: 1 !important;
+                }
+                .Experience-gradient {
+                    background-image: linear-gradient(to left, #006719, #014a13);
+                    opacity: 1 !important;
+                }
+                .Insight-gradient {
+                    background-image: linear-gradient(to left, #722779, #511357);
+                    opacity: 1 !important;
+                }
+                .Architecture-gradient,
+                .Installation-gradient {
+                    background-image: linear-gradient(to left, #768490, #252b2f);
+                    opacity: 1 !important;
+                }
+                a.link-highlighters {
+                    font-size: 18px;
+                    display: block;
+                    color: #fff;
+                    opacity: .7;
+                    padding-left: 15px;
+                    margin-bottom: 0px;
+                    font-weight: 300;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    &amp;:hover {
+                        background-color: rgba(0, 0, 0, 0.1);
+                        opacity: 0.2;
                     }
+                    // -webkit-border-image: -webkit-gradient(linear, 0 100%, 0 0, from(black), to(rgba(0, 0, 0, 0))) 1 100%;
+                    // -webkit-border-image: -webkit-linear-gradient(bottom, black, rgba(0, 0, 0, 0)) 1 100%;
+                    // -moz-border-image: -moz-linear-gradient(bottom, black, rgba(0, 0, 0, 0)) 1 100%;
+                    // -o-border-image: -o-linear-gradient(bottom, black, rgba(0, 0, 0, 0)) 1 100%;
+                    // border-image: linear-gradient(to top, black, rgba(0, 0, 0, 0)) 1 100%;
                 }
             }
         }
+        .site-name {
+            opacity: 0.5;
+            color: #fff;
+            font-weight: 300;
+            &amp;:hover {
+                background-color: rgba(0, 0, 0, .1);
+                opacity: .2;
+            }
+        }
+        .collapse-arrow {
+            width: 150px;
+        }
     }
-    .three-column {
-        height: 100%;
+    /*######################### artifact details mobile styling ############################################ */
+    
+    .artifact-details {
+        color: #fff;
+        width: 100%;
         padding: 20px;
-    }
-    .dev-details-div {
-        width: 90%;
-        display: flex;
-        //padding-right: 5px;
-        //height: 100%;
-        // height: 90%;
-        height: 65%;
-        align-items: center;
-        justify-content: space-around;
-        position: relative;
-        @media screen and (max-height: 1150px) {
-            //height: 25%;
-            height: 75%;
-        }
-        @media screen and (max-height: 1000px) {
-            //height: 25%;
-            height: 84%;
-        }
-        @media screen and (max-height: 960px) {
-            //height: 25%;
-            height: 90%;
-        }
-        @media screen and (max-height: 768px) {
-            //height: 25%;
+        .learn-more-mobile {
             width: 100%;
-            height: 80%;
+            clear: both;
+            background: #2B394F;
+            margin-bottom: 30px;
+            .learn-more-header {
+                background: #7aceff;
+                padding: 5px;
+                width: 100%;
+                text-transform: uppercase;
+                span {
+                    font-size: 16px;
+                    font-weight: bold;
+                    line-height: 1;
+                    letter-spacing: 0px;
+                    text-align: center;
+                    color: #293852;
+                }
+            }
+            .learn-more-links {
+                width: 100%;
+                padding: 10px;
+                a {
+                    opacity: 0.7;
+                    font-size: 16px;
+                    font-weight: 600;
+                    letter-spacing: -0.2px;
+                    color: #7aceff;
+                    display: block;
+                    text-align: left;
+                }
+            }
         }
-        .mobile-detail-viewer {
-            height: 100%;
+        .learn-more {
             width: 100%;
+            padding: 30px;
+            background: #2B394F;
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            .exp {
+                width: 100px;
+                height: 100px;
+                // border: 2px solid #D8D8D8;
+                border-radius: 50%;
+                margin-right: 20px;
+                padding: 10px;
+                line-height: 80px;
+                display: flex;
+                background: #7aceff;
+                align-items: center;
+                span {
+                    text-transform: uppercase;
+                    font-size: 16px;
+                    line-height: 1;
+                    letter-spacing: 0px;
+                    text-align: center;
+                    color: #293852;
+                    font-weight: 600;
+                }
+            }
+            .learn-more-links {
+                a {
+                    opacity: 0.7;
+                    font-size: 24px;
+                    font-weight: 600;
+                    letter-spacing: -0.2px;
+                    color: #7aceff;
+                    display: block;
+                    text-align: left;
+                }
+            }
+        }
+        .heading-part {
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
+            margin-bottom: 20px;
+            .page-heading {
+                font-size: 52px;
+                font-weight: bold;
+                padding-bottom: 10px;
+                letter-spacing: 1px;
+                @media screen and (max-width: 600px) {
+                    font-size: 32px;
+                    font-weight: 600;
+                }
+            }
+            .page-short-description {
+                opacity: 0.7;
+                font-size: 28px;
+                font-weight: 400;
+                letter-spacing: -0.2px;
+                color: #fff;
+                @media screen and (max-width: 600px) {
+                    font-size: 15px;
+                    letter-spacing: -0.2px;
+                    font-weight: 600;
+                }
+            }
+        }
+        .page-description {
+            opacity: 0.8;
+            font-size: 24px;
+            padding-bottom: 20px;
+            font-weight: 300;
+            margin-top: 50px;
+            strong {
+                letter-spacing: 1px;
+            }
+            @media screen and (max-width: 600px) {
+                font-size: 16px;
+                line-height: 1.19;
+                letter-spacing: -0.2px;
+                text-align: left;
+                margin-top: 30px;
+            }
+        }
+        .app-dev-images {
+            background: #191f31;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            @media screen and (max-width: 769px) {
+                padding: 0px;
+                display: block;
+                background: transparent;
+                margin-top: 15px;
+            }
+            .app-screenshot {
+                width: 25%;
+                padding-right: 20px;
+                @media screen and (max-width: 769px) {
+                    width: 30%;
+                    // padding-top: 10px;
+                }
+                @media screen and (max-width: 414px) {
+                    width: 45%;
+                    // padding-top: 10px;
+                }
+                img {
+                    width: 100%;
+                }
+            }
+            .dev-screenshot {
+                width: 75%;
+                @media screen and (max-width: 769px) {
+                    width: 100%;
+                }
+                img {
+                    width: 100%;
+                }
+            }
+        }
+        .dev-image {
+            width: 100%;
+            padding: 30px 0px;
             img {
                 width: 100%;
             }
         }
-        .collapse-icon {
-            position: absolute;
-            left: -40px;
-            color: #fff;
-        }
-        .detail-viewer {
-            height: 100%;
-            background: #000;
-            //border-radius: 9px;
-            color: #fff;
-            right: 25%;
-            padding: 0px;
-            //display: flex;
-            //align-items: center;
-            //justify-content: space-between;
-            position: absolute;
-            width: 0px;
-            overflow: hidden;
-            z-index: 1201;
-            transition: all 1s;
-            &amp;.expand-details {
-                width: 75%;
-                padding: 30px;
-                @media screen and (max-width: 1300px) {
-                    //height: 25%;
-                    width: 65%;
-                    right: 30%;
-                }
-                @media screen and (max-width: 1050px) {
-                    //height: 25%;
-                    width: 65%;
-                    right: 35%;
-                }
-                //overflow: visible;
+        .app-image {
+            width: 100%;
+            padding: 30px 0px;
+            img {
+                width: 50%;
             }
-            .category-viewer {
+        }
+        .caption-appscreen {
+            display: flex;
+            padding-top: 10px;
+            width: 100%;
+        }
+        .caption {
+            opacity: 0.8;
+            font-size: 22px;
+            letter-spacing: -0.2px;
+            text-align: center;
+            color: #7aceff;
+            margin-bottom: 20px;
+            clear: both;
+            @media screen and (max-width: 769px) {
+                font-size: 22px;
+                line-height: 1.14;
+                letter-spacing: -0.2px;
+                text-align: left;
+                float: left;
+                width: 70%;
+            }
+            @media screen and (max-width: 414px) {
+                font-size: 15px;
+                width: 55%;
+            }
+        }
+        .each-integration-section {
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
+            clear: both;
+            padding: 30px 0px;
+            overflow: hidden;
+            @media screen and (max-width: 769px) {
+                padding: 0px;
+                margin-bottom: 20px;
+            }
+            .app-icon-description-section {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                height: 100%;
-                .gif {
-                    width: 75%;
-                    padding: 10px;
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                justify-content: flex-start;
+                padding: 15px;
+                @media screen and (max-width: 600px) {
+                    align-items: flex-start;
+                    padding: 0px;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                }
+                .app-icon {
                     img {
-                        height: 100%;
-                        @media screen and (max-width: 1300px) {
-                            //height: 25%;
-                            height: auto;
+                        width: 90%;
+                        @media screen and (max-width: 414px) {
                             width: 100%;
                         }
                     }
                 }
-                .static {
-                    //width: 300px;
-                    padding: 10px;
-                    height: 100%;
-                    img {
-                        height: 90%;
-                    }
-                    .page-buttons {
-                        padding: 10px;
-                        button {
-                            margin: 10px;
-                            border: 0px;
-                            color: #fff;
-                            padding: 10px 20px;
+                .integration-description {
+                    opacity: 0.8;
+                    text-align: left;
+                    padding-left: 30px;
+                    .head {
+                        font-size: 28px;
+                        font-weight: 600;
+                        line-height: 1;
+                        margin-bottom: 10px;
+                        @media screen and (max-width: 600px) {
+                            font-size: 22px;
+                            letter-spacing: -0.2px;
                         }
                     }
                 }
             }
-            // img {
-            //     height: 90%;
-            //     width: 100%;
+            .text {
+                font-size: 24px;
+                font-weight: 300;
+                line-height: 1.33;
+                letter-spacing: -0.2px;
+                opacity: 0.7;
+                @media screen and (max-width: 600px) {
+                    font-size: 16px;
+                    letter-spacing: -0.2px;
+                    text-align: left;
+                    opacity: 0.7;
+                    margin-bottom: 20px;
+                }
+            }
+        }
+        .artifact-sections {
+            width: 100%;
+        }
+        .text-top-image-bottom {
+            padding: 20px;
+            img {
+                width: 90%;
+            }
+            .one-line-header {
+                font-size: 28px;
+                font-weight: bold;
+            }
+            .content-text {
+                clear: both;
+                opacity: 0.8;
+                font-family: SourceSansPro;
+                font-size: 24px;
+                line-height: 1.33;
+                letter-spacing: -0.2px;
+                text-align: left;
+                @media screen and (max-width: 414px) {
+                    font-size: 16px;
+                    line-height: 1.19;
+                    letter-spacing: -0.2px;
+                    text-align: left;
+                }
+            }
+        }
+        .text-right-image-left {
+            padding: 20px;
+            display: flex;
+            //align-items: center;
+            justify-content: flex-start;
+            img {
+                width: 100%;
+            }
+            .text-part {
+                .one-line-header {
+                    text-align: center;
+                    font-size: 28px;
+                    font-weight: bold;
+                }
+                .content-text {
+                    clear: both;
+                    opacity: 0.8;
+                    font-family: SourceSansPro;
+                    font-size: 24px;
+                    line-height: 1.33;
+                    letter-spacing: -0.2px;
+                    text-align: left;
+                }
+            }
+        }
+        /*Mobile*/
+        .artifact-installation {
+            text-align: left;
+            font-weight: 300;
+            @media screen and (max-width: 769px) {
+                padding: 0px;
+                margin-bottom: 80px;
+            }
+            .image-div {
+                ///width: 100%;
+                /* height: 100%; */
+                overflow: hidden;
+                img {
+                    //width: 100%;
+                }
+            }
+            .sub-section {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                p {
+                    opacity: 0.8;
+                    font-size: 24px;
+                    margin: 0px;
+                    font-weight: 300;
+                    @media screen and (max-width: 414px) {
+                        font-size: 15px;
+                    }
+                }
+                .head {
+                    font-weight: bold;
+                }
+            }
+            .heading {
+                opacity: 0.8;
+                font-size: 32px;
+                text-transform: uppercase;
+                margin-top: 20px;
+                margin-bottom: 20px;
+                font-weight: 600;
+                border-bottom: 1px solid rgba(255, 255, 255, .1);
+                @media screen and (max-width: 769px) {
+                    font-size: 22px;
+                    margin-top: 0px;
+                }
+            }
+            .inst-head {
+                opacity: 0.8;
+                font-size: 26px;
+                font-weight: 600;
+                margin-bottom: 20px;
+                margin-bottom: 20px;
+                @media screen and (max-width: 414px) {
+                    font-size: 16px;
+                }
+            }
+            p {
+                opacity: 0.8;
+                font-size: 24px;
+                margin-top: 20px;
+                margin-bottom: 20px;
+                display: block;
+                font-weight: 300;
+                @media screen and (max-width: 414px) {
+                    font-size: 15px;
+                }
+            }
+            img {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+        }
+    }
+    /*content display css*/
+    /*######################### artifact details mobile styling END ############################################ */
+    
+    .app-details {
+        height: 100%;
+        padding: 0px;
+        position: relative;
+        // &amp;.translatez-for-sidebar {
+        //     transform: translateZ(0);
+        //     -webkit-transform: translateZ(0);
+        // }
+        .flex-these {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            @media screen and (max-width: 414px) {
+                padding: 10px;
+            }
+        }
+        .main-div {
+            height: 100%;
+            padding: 0px;
+            position: relative;
+            .image-switcher-arrows {
+                position: absolute;
+                width: 100%;
+                display: flex;
+                z-index: 1400;
+                align-items: center;
+                justify-content: space-between;
+                bottom: -2%;
+                img {
+                    padding: 20px;
+                    &amp;.disabled {
+                        pointer-events: none;
+                        opacity: .2;
+                    }
+                }
+                img.rotate {
+                    -ms-transform: rotate(180deg);
+                    /* IE 9 */
+                    -webkit-transform: rotate(180deg);
+                    /* Chrome, Safari, Opera */
+                    transform: rotate(180deg);
+                }
+            }
+            .app-related-data {
+                height: 100%;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                .architecture-image {
+                    width: 100%;
+                    height: 95%;
+                    position: relative;
+                    img {
+                        height: 95%;
+                        @media screen and (max-width: 1220px) {
+                            width: 100%;
+                            height: auto;
+                        }
+                    }
+                    .divider {
+                        position: absolute;
+                        bottom: 0px;
+                        left: 0px;
+                        width: 100%;
+                        text-align: left;
+                        border-top: 2px solid #4a4a4a;
+                        padding: 10px;
+                        @media screen and (max-width: 1220px) {
+                            bottom: -41px;
+                        }
+                        a {
+                            color: #979797;
+                            margin: 10px;
+                            img {
+                                width: 32px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .details-container {
+            height: 100%;
+            width: 100%;
+            max-width: 900px;
+            //adding: 20px;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0px;
+            @media screen and (max-width: 1450px) {
+                //height: 25%;
+                width: 100%;
+            }
+        }
+        .artifact-details {
+            color: #fff;
+            width: 100%;
+            padding: 20px 0px;
+            .learn-more {
+                width: 100%;
+                padding: 30px;
+                background: #2B394F;
+                display: flex;
+                align-items: center;
+                margin-bottom: 30px;
+                .exp {
+                    width: 100px;
+                    height: 100px;
+                    // border: 2px solid #D8D8D8;
+                    border-radius: 50%;
+                    margin-right: 20px;
+                    padding: 10px;
+                    line-height: 80px;
+                    display: flex;
+                    background: #7aceff;
+                    align-items: center;
+                    span {
+                        text-transform: uppercase;
+                        font-size: 16px;
+                        line-height: 1;
+                        letter-spacing: 0px;
+                        text-align: center;
+                        color: #293852;
+                        font-weight: 600;
+                    }
+                }
+                .learn-more-links {
+                    a {
+                        opacity: 0.7;
+                        font-size: 24px;
+                        font-weight: 300;
+                        letter-spacing: -0.2px;
+                        color: #7aceff;
+                        display: block;
+                        text-align: left;
+                    }
+                }
+            }
+            .heading-part {
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, .1);
+                margin-bottom: 20px;
+                .page-heading {
+                    font-size: 52px;
+                    font-weight: bold;
+                    padding-bottom: 10px;
+                }
+                .page-short-description {
+                    opacity: 0.7;
+                    font-size: 28px;
+                    //font-weight: 600;
+                    color: #fff;
+                }
+            }
+            .app-dev-images {
+                background: #191f31;
+                width: 100%;
+                margin-top: 30px;
+                margin-bottom: 15px;
+                padding: 30px;
+                display: flex;
+                align-items: center;
+                .app-screenshot {
+                    width: 25%;
+                    padding-right: 20px;
+                    img {
+                        width: 100%;
+                    }
+                }
+                .dev-screenshot {
+                    width: 75%;
+                    img {
+                        width: 100%;
+                    }
+                }
+            }
+            .dev-image {
+                width: 100%;
+                padding: 30px 0px;
+                img {
+                    width: 100%;
+                }
+            }
+            .app-image {
+                width: 100%;
+                padding: 30px 0px;
+                img {
+                    width: 100%;
+                }
+            }
+            .each-integration-section {
+                border-bottom: 1px solid rgba(255, 255, 255, .1);
+                clear: both;
+                padding: 30px 0px;
+                overflow: hidden;
+                .caption {
+                    opacity: 0.8;
+                    font-size: 22px;
+                    letter-spacing: -0.2px;
+                    text-align: center;
+                    color: #7aceff;
+                    margin-bottom: 20px;
+                    clear: both;
+                }
+                .app-icon-description-section {
+                    display: flex;
+                    align-items: flex-start;
+                    justify-content: flex-start;
+                    padding: 15px 0px;
+                    .app-icon {
+                        padding-left: 0px;
+                    }
+                    .integration-description {
+                        opacity: 0.8;
+                        text-align: left;
+                        padding-left: 30px;
+                        padding-right: 0px;
+                        .head {
+                            font-size: 28px;
+                            font-weight: 600;
+                            line-height: 1;
+                            margin-bottom: 10px;
+                        }
+                        .text {
+                            font-size: 24px;
+                            font-weight: 300;
+                            line-height: 1.33;
+                            letter-spacing: -0.2px;
+                        }
+                    }
+                }
+            }
+            .artifact-sections {
+                width: 100%;
+            }
+            .text-top-image-bottom {
+                padding: 20px 0px;
+                @media screen and (max-width: 414px) {
+                    padding: 0px;
+                    padding-top: 20px;
+                }
+                img {
+                    width: 90%;
+                }
+                .one-line-header {
+                    font-size: 28px;
+                    font-weight: bold;
+                }
+                .content-text {
+                    clear: both;
+                    opacity: 0.8;
+                    font-family: SourceSansPro;
+                    font-size: 24px;
+                    line-height: 1.33;
+                    letter-spacing: -0.2px;
+                    text-align: left;
+                    font-weight: 300;
+                }
+            }
+            .text-right-image-left {
+                padding: 20px;
+                display: flex;
+                //align-items: center;
+                justify-content: flex-start;
+                img {
+                    width: 100%;
+                }
+                .text-part {
+                    .one-line-header {
+                        text-align: center;
+                        font-size: 28px;
+                        font-weight: bold;
+                    }
+                    .content-text {
+                        clear: both;
+                        opacity: 0.8;
+                        font-family: SourceSansPro;
+                        font-size: 24px;
+                        line-height: 1.33;
+                        letter-spacing: -0.2px;
+                        text-align: left;
+                    }
+                }
+            }
+            .artifact-installation {
+                text-align: left;
+                font-weight: 300;
+                @media screen and (max-width: 769px) {
+                    padding: 0px;
+                }
+                .image-div {
+                    width: 100%;
+                    /* height: 100%; */
+                    overflow: hidden;
+                }
+                .section {
+                    margin-bottom: 50px;
+                }
+                .each-repo {
+                    padding-left: 10px;
+                    font-size: 24px;
+                    //margin-top: 20px;
+                    margin-bottom: 10px;
+                    font-weight: 300;
+                    list-style: disc inside none;
+                    display: list-item;
+                }
+                .sub-section {
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                    p {
+                        opacity: 0.8;
+                        font-size: 24px;
+                        margin: 0px;
+                        font-weight: 300;
+                        letter-spacing: 1px;
+                    }
+                    .head {
+                        font-weight: bold;
+                    }
+                }
+                .heading {
+                    opacity: 0.8;
+                    font-size: 32px;
+                    text-transform: uppercase;
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                    font-weight: 600;
+                    border-bottom: 1px solid rgba(255, 255, 255, .1);
+                }
+                .inst-head {
+                    opacity: 0.8;
+                    font-size: 26px;
+                    font-weight: 600;
+                    margin-bottom: 20px;
+                    margin-bottom: 20px;
+                }
+                p {
+                    opacity: 0.8;
+                    font-size: 24px;
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                    display: block;
+                    font-weight: 300;
+                }
+                img {
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                }
+            }
+        }
+        .dev-details-div {
+            width: 100%;
+            display: flex;
+            min-height: 700px;
+            //padding-right: 5px;
+            //height: 100%;
+            // height: 90%;
+            height: 100%;
+            align-items: center;
+            justify-content: space-around;
+            position: relative;
+            // @media screen and (max-height: 1150px) {
+            //     //height: 25%;
+            //     height: 75%;
             // }
+            // @media screen and (max-height: 1000px) {
+            //     //height: 25%;
+            //     height: 84%;
+            // }
+            // @media screen and (max-height: 960px) {
+            //     //height: 25%;
+            //     height: 90%;
+            // }
+            // @media screen and (max-height: 768px) {
+            //     //height: 25%;
+            //     width: 100%;
+            //     height: 80%;
+            // }
+            .mobile-detail-viewer {
+                height: 100%;
+                width: 100%;
+                img {
+                    width: 100%;
+                }
+            }
+            .collapse-icon {
+                position: absolute;
+                left: -40px;
+                color: #fff;
+            }
+            .detail-viewer {
+                height: 100%;
+                background: #000;
+                //border-radius: 9px;
+                color: #fff;
+                right: 25%;
+                padding: 0px;
+                //display: flex;
+                //align-items: center;
+                //justify-content: space-between;
+                position: absolute;
+                width: 0px;
+                overflow: hidden;
+                z-index: 1201;
+                transition: all 1s;
+                &amp;.expand-details {
+                    width: 75%;
+                    padding: 30px;
+                    @media screen and (max-width: 1300px) {
+                        //height: 25%;
+                        width: 65%;
+                        right: 30%;
+                    }
+                    @media screen and (max-width: 1050px) {
+                        //height: 25%;
+                        width: 65%;
+                        right: 35%;
+                    }
+                    //overflow: visible;
+                }
+                .category-viewer {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    .gif {
+                        width: 75%;
+                        padding: 10px;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        img {
+                            height: 100%;
+                            @media screen and (max-width: 1300px) {
+                                //height: 25%;
+                                height: auto;
+                                width: 100%;
+                            }
+                        }
+                    }
+                    .static {
+                        //width: 300px;
+                        padding: 10px;
+                        height: 100%;
+                        img {
+                            height: 90%;
+                        }
+                        .page-buttons {
+                            padding: 10px;
+                            button {
+                                margin: 10px;
+                                border: 0px;
+                                color: #fff;
+                                padding: 10px 20px;
+                            }
+                        }
+                    }
+                }
+                // img {
+                //     height: 90%;
+                //     width: 100%;
+                // }
+            }
         }
-    }
-    .col-btns {
-        text-transform: uppercase;
-        width: 200px;
-        background: linear-gradient(to bottom, #4a4a4a, #333232);
-        color: #fff;
-        margin-top: 20px;
-        font-size: 22px;
-        @media screen and (max-height: 900px) {
-            font-size: 18px;
+        .lef-btn {
+            border-radius: 6px 0px 0px 0px;
         }
-        @media screen and (max-width: 1050px) {
-            width: 175px;
-            font-size: 20px;
+        .bottom-btn {
+            border-radius: 0px 0px 6px 6px;
         }
-        @media screen and (max-width: 414px) {
-            width: 110px;
-            font-size: 12px;
-            margin-top: 8px;
-        }
-        &amp;:focus {
-            background: #d8d8d8;
-            color: #000;
-        }
-    }
-    .col-btn-insight {
-        background-image: linear-gradient(to bottom, #722779, #511357);
-    }
-    .col-btn-integration {
-        background-image: linear-gradient(to bottom, #006719, #014a13);
-    }
-    .col-btn-automation {
-        background-image: linear-gradient(to bottom, #1d5083, #08325c);
-    }
-    .col-btn-consumerization {
-        background-image: linear-gradient(to bottom, #ee3e3f, #b02324);
-    }
-    .dev-center {
-        width: 200px;
-        //margin: 0 4%;
-        //margin: 0px 70px;
-        background: inherit;
-        p {
-            margin-bottom: 0px;
+        .col-btns {
             text-transform: uppercase;
-            color: #B3B3B3;
-            font-size: 22px;
+            width: 40%;
+            height: 40px;
+            min-width: 80px;
+            color: #fff;
+            margin: 10px;
+            background: $btn-launch-color;
+            font-size: 15px;
+            border-radius: 1px;
             @media screen and (max-height: 900px) {
                 font-size: 18px;
             }
-        }
-    }
-    // .detail-viewer {
-    //     height: 100%;
-    // }
-    .app-view {
-        //height: 100%;
-        height: 130%;
-        margin: 20px;
-        //width: 330px;
-        transition: all 2s;
-        @media screen and (max-width: 1200px) {
-            //height: 25%;
-            height: 120%;
-            min-width: 300px;
-        }
-        @media screen and (max-width: 1050px) {
-            //height: 25%;
-            height: 100%;
-            min-width: 250px;
-        }
-        @media screen and (max-width: 768px) {
-            //height: 25%;
-            transition: all 0s;
-        }
-        @media screen and (max-width: 414px) {
-            //height: 25%;
-            min-width: auto;
-            margin: 0px;
-            height: 120%;
-        }
-        &amp;.reduce-height {
-            height: 75%;
-            min-width: 200px;
-        }
-        .video-player {
-            // height: 100%;
-            // width: 55%;
-            // padding: 20px;
-            // border: 2px solid;
-            // border-radius: 10px;
-            height: 100%;
-            min-width: 100%;
-            //width: 375px;
-            padding: 30px 15px;
-            border: 2px solid #4a4a4a;
-            border-radius: 10px;
+            @media screen and (max-width: 1050px) {
+                width: 175px;
+                font-size: 20px;
+            }
             @media screen and (max-width: 414px) {
-                //height: 25%;
-                padding: 10px;
-                min-width: 165px;
+                width: 110px;
+                font-size: 12px;
+                margin-top: 8px;
+            }
+            &amp;:focus {
+                background: $btn-launch-color;
+                color: #fff;
             }
         }
-        #live-app {
-            height: 100%;
-            width: 375px;
-            padding: 30px 20px;
-            border: 2px solid;
-            border-radius: 10px
+        .col-btn-insight {
+            background-image: linear-gradient(to bottom, #722779, #511357);
         }
-        .app-image {
-            height: 100%;
-            width: 100%;
-            img {
-                height: 100%;
-                border: 2px solid #4a4a4a;
+        .col-btn-integration {
+            background-image: linear-gradient(to bottom, #006719, #014a13);
+        }
+        .col-btn-automation {
+            background-image: linear-gradient(to bottom, #1d5083, #08325c);
+        }
+        .col-btn-consumerization {
+            background-image: linear-gradient(to bottom, #ee3e3f, #b02324);
+        }
+        .dev-center {
+            width: 200px;
+            //margin: 0 4%;
+            //margin: 0px 70px;
+            background: inherit;
+            p {
+                margin-bottom: 0px;
+                text-transform: uppercase;
+                color: #B3B3B3;
+                font-size: 22px;
+                @media screen and (max-height: 900px) {
+                    font-size: 18px;
+                }
+            }
+        }
+        // .detail-viewer {
+        //     height: 100%;
+        // }
+        .app-view {
+            //height: 100%;
+            height: 90%;
+            width: 40%;
+            //margin: 20px;
+            //width: 330px;
+            transition: all 2s;
+            max-height: 800px;
+            @media screen and (max-width: 1200px) {
+                //height: 25%;
+                // height: 120%;
+                min-width: 300px;
+            }
+            @media screen and (max-width: 1100px) {
+                //height: 25%;
+                width: 50%;
+            }
+            @media screen and (max-width: 768px) {
+                //height: 25%;
+                transition: all 0s;
+            }
+            @media screen and (max-width: 414px) {
+                //height: 25%;
+                min-width: auto;
+                margin: 0px;
+                height: 120%;
+            }
+            &amp;.reduce-height {
+                height: 75%;
+                min-width: 200px;
+            }
+            .video-player {
+                // height: 100%;
+                // width: 55%;
+                // padding: 20px;
+                // border: 2px solid;
+                // border-radius: 10px;
+                height: 95%;
+                min-width: 414px;
+                //width: 375px;
                 padding: 30px 15px;
+                //border: 2px solid #4a4a4a;
                 border-radius: 10px;
                 @media screen and (max-width: 414px) {
                     //height: 25%;
                     padding: 10px;
+                    min-width: 165px;
+                }
+            }
+            #live-app {
+                height: 95%;
+                width: 100%;
+                padding: 30px 0px;
+                border: 0px solid;
+                border-radius: 10px;
+                max-width: 414px;
+            }
+            .app-image {
+                height: 95%;
+                width: 100%;
+                img {
+                    height: 100%;
+                    // border: 2px solid #4a4a4a;
+                    padding: 30px 15px;
+                    border-radius: 10px;
+                    //max-height: 700px;
+                    @media screen and (max-width: 1000px) {
+                        height: 90%;
+                    }
+                    @media screen and (max-width: 414px) {
+                        //height: 25%;
+                        padding: 10px;
+                    }
                 }
             }
         }
-    }
-    .stock-image {
-        width: 200px;
-        //width: 20%;
-        //margin: 0 8%;
-        @media screen and (max-width: 1050px) {
-            width: 175px;
-        }
-        @media screen and (max-width: 414px) {
-            width: 100px;
-        }
-        .avatar-name-image {
-            width: 100%;
-            height: 255px;
-            @media screen and (max-width: 768px) {
-                height: 210px;
+        .stock-image {
+            //width: 333px;
+            width: 30%;
+            max-height: 800px;
+            height: 90%;
+            display: flex;
+            align-items: center;
+            //width: 20%;
+            //margin: 0 8%;
+            // @media screen and (max-height: 900px) {
+            //     width: 180px;
+            // }
+            // @media screen and (max-width: 1050px) {
+            //     width: 175px;
+            // }
+            // @media screen and (max-width: 414px) {
+            //     width: 100px;
+            // }
+            .flex-display {
+                height: 90%;
             }
-            @media screen and (max-width: 414px) {
-                height: 125px;
+            .app-name {
+                font-size: 32px;
+                color: #fff;
+                //line-height: 1;
+                font-weight: bold;
             }
-            //display: flex;
-            //justify-content: center;
-            .name {
-                color: #c9c9c9;
-                text-align: center;
-                font-size: 22px;
-                font-style: italic;
-                @media screen and (max-width: 414px) {
-                    font-size: 14px;
-                }
+            .description {
+                font-size: 18px;
+                color: #fff;
+                font-weight: 600;
+                opacity: 0.7;
             }
-            .exp {
-                margin: 5px;
-                width: 200px;
-                height: 200px;
-                // border: 2px solid #D8D8D8;
-                border-radius: 50%;
-                line-height: 80px;
+            .avatar-name-image {
+                width: 100%;
+                //height: 40%;
                 display: flex;
-                z-index: 1200;
-                top: 0px;
-                align-items: center;
-                position: relative;
                 justify-content: center;
-                background-position: center;
-                background-size: cover;
-                @media screen and (max-width: 1050px) {
-                    width: 170px;
-                    height: 170px;
+                //max-height: 45%;
+                @media screen and (min-width: 1400px) {
+                    height: 45%;
+                }
+                @media screen and (max-width: 1200px) {
+                    height: 31%;
+                }
+                @media screen and (max-width: 768px) {
+                    //height: 210px;
                 }
                 @media screen and (max-width: 414px) {
-                    width: 100px;
-                    height: 100px;
+                    height: 125px;
+                }
+                //display: flex;
+                //justify-content: center;
+                .name {
+                    color: #fff;
+                    text-align: center;
+                    font-size: 22px;
+                    font-style: italic;
+                    @media screen and (max-width: 414px) {
+                        font-size: 14px;
+                    }
+                }
+                .exp {
+                    // margin: 5px;
+                    width: 300px;
+                    height: 300px;
+                    // border: 2px solid #D8D8D8;
+                    border-radius: 50%;
+                    line-height: 80px;
+                    display: flex;
+                    z-index: 1200;
+                    top: 0px;
+                    align-items: center;
+                    position: relative;
+                    justify-content: center;
+                    background-position: center;
+                    background-size: cover;
+                    @media screen and (max-height: 900px) {
+                        width: 220px;
+                        height: 220px;
+                    }
+                    @media screen and (max-width: 1250px) {
+                        width: 220px;
+                        height: 220px;
+                    }
+                    @media screen and (max-width: 414px) {
+                        width: 100px;
+                        height: 100px;
+                    }
                 }
             }
         }
     }
-}</css>
+    /*#################################### Mobile styling ################################# */
+    
+    .mobile-app-details {
+        height: 100%;
+        padding: 0px;
+        position: relative;
+        //overflow: hidden;
+        .app-metadata {
+            height: 100%;
+        }
+        .mobile-banner {
+            height: 25%;
+            width: 100%;
+            display: flex;
+            //background-image: linear-gradient(to bottom, #CCB29B, #EBE7E1);
+            align-items: center;
+            position: relative;
+            justify-content: center;
+            background-position: center;
+            background-size: cover;
+        }
+        .app-details-mobile {
+            position: relative;
+            height: 100%;
+            background-image: linear-gradient(to top, rgb(53, 120, 200), rgb(21, 47, 79));
+            .buttons-group-mobile {
+                margin-top: 5px;
+                padding: 0px;
+                //transform: translate3d(0px, -90%, 0px);
+            }
+        }
+        .btn-mobile {
+            background: #4780CE;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 15px;
+            color: #C4D7EF;
+            width: 95%;
+            margin-top: 5px;
+            min-width: 150px;
+        }
+        .btn-first {
+            border-radius: 6px 6px 0px 0px;
+        }
+        .btn-middle {
+            border-radius: 0px;
+        }
+        .btn-last {
+            border-radius: 0px 0px 6px 6px;
+        }
+        .left-part {
+            padding: 20px 10px 10px 20px;
+            width: 50%;
+            float: left;
+            .image-video {
+                width: 100%;
+                -moz-box-shadow: 0 0 7px #000;
+                -webkit-box-shadow: 0 0 7px #000;
+                box-shadow: 0 0 7px #000;
+                //margin-top: -76%;
+                //transform: translate3d(0px, -45%, 0px);
+                @media screen and (max-width: 768px) {
+                    margin-top: -40%;
+                }
+                @media screen and (max-width: 414px) {
+                    margin-top: -76%;
+                }
+            }
+            .app-image {
+                width: 100%;
+                // margin-top: -65%;
+                img {
+                    width: 100%;
+                }
+            }
+        }
+        // .translate-this {
+        //     animation-name: appimagemoveup;
+        //     animation-timing-function: ease;
+        //     animation-duration: 2s;
+        //     transform: translate3d(0px, -40%, 0px);
+        // }
+        // .translate-this-btn {
+        //     animation-name: appbtnmoveup;
+        //     animation-timing-function: ease;
+        //     animation-duration: 2s;
+        //     transform: translate3d(0px, -85%, 0px);
+        // }
+        .right-part {
+            padding: 20px 20px 10px 10px;
+            width: 50%;
+            float: left;
+            text-align: left;
+            .app-name {
+                font-size: 28px;
+                color: #fff;
+                @media screen and (max-width: 768px) {
+                    font-size: 36px;
+                }
+                @media screen and (max-width: 414px) {
+                    font-size: 28px !important;
+                }
+            }
+            .description {
+                font-size: 15px;
+                color: #C4D7EF;
+                opacity: .7;
+                @media screen and (max-width: 768px) {
+                    font-size: 24px;
+                }
+                @media screen and (max-width: 414px) {
+                    font-size: 15px !important;
+                }
+            }
+        }
+        .bottom-buttons {
+            clear: both;
+            width: 100%;
+            height: 45px;
+            position: fixed;
+            bottom: 0px;
+            .position-them {
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+            .go-home {
+                background: #29517F;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 15px;
+                color: #7892AE;
+                height: inherit;
+                text-transform: uppercase;
+            }
+            .slide-btns {
+                width: 30%;
+                height: 100%;
+                float: left;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-image: linear-gradient(to right, #3e528c, #374a81);
+                font-size: 32px;
+                color: #000;
+                opacity: 1;
+                &amp;.disabled {
+                    pointer-events: none;
+                }
+                span {
+                    //height: 12px;
+                }
+                &amp;.side-left {
+                    float: left;
+                    -ms-transform: rotate(180deg);
+                    -webkit-transform: rotate(180deg);
+                    transform: rotate(180deg);
+                }
+                &amp;.back-btn {
+                    float: left;
+                    font-size: 18px;
+                    color: #fff;
+                    font-weight: 300;
+                }
+                &amp;.side-right {
+                    float: right;
+                }
+            }
+            .middle-btn {
+                width: 40%;
+                float: left;
+                height: 60px;
+                background: #4780CE;
+                left: 0;
+                right: 0;
+                top: -15px;
+                border-radius: 9px 9px 0px 0px;
+                margin-left: auto;
+                margin-right: auto;
+                position: absolute;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                .center-align {
+                    width: 100%;
+                }
+                p {
+                    margin: 0px;
+                    opacity: 0.7;
+                    font-size: 15px;
+                    color: #fff;
+                    text-transform: uppercase;
+                }
+            }
+        }
+        .dev-details-mobile {
+            height: 100%;
+            //background-image: linear-gradient(to bottom, rgb(70, 93, 160), rgb(9, 9, 9));
+            .section-learn-to-build {
+                height: 100%;
+            }
+            .banner-app-intro {
+                height: 25%;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
+                .app-screen {
+                    width: 25%;
+                    height: 100%;
+                    img {
+                        height: 100%;
+                    }
+                }
+                .app-name-text {
+                    width: 75%;
+                    text-align: left;
+                    padding: 20px;
+                    .app-name {
+                        font-size: 28px;
+                        color: #fff;
+                        margin-bottom: 5px;
+                    }
+                    .intro {
+                        font-size: 16px;
+                        color: #fff;
+                        opacity: .7;
+                    }
+                }
+            }
+            .artifatcs-list {
+                height: 75%;
+                width: 100%;
+                background-image: linear-gradient(to top, rgba(100, 134, 229, .16), rgba(0, 0, 0, .16));
+                .each-artifact-mobile {
+                    height: 50px;
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    border-bottom: 1px solid rgb(50, 66, 110);
+                    .color-pill {
+                        height: 34px;
+                        width: 100px;
+                        border-radius: 0px 6px 6px 0px;
+                    }
+                    a {
+                        color: #fff;
+                        font-size: 18px;
+                        padding-left: 30px;
+                        font-weight: 300;
+                    }
+                }
+                .bottom-buttons {
+                    clear: both;
+                    width: 100%;
+                    height: 45px;
+                    position: fixed;
+                    bottom: 0px;
+                }
+            }
+        }
+    }
+    
+    @keyframes appimagemoveup {
+        0% {
+            transform: translate3d(0px, 0px, 0px);
+        }
+        50% {
+            transform: translate3d(0px, -45%, 0px);
+        }
+        90% {
+            transform: translate3d(0px, -45%, 0px);
+        }
+        // 95% {
+        //     transform: translate3d(0px, -30%, 0px);
+        // }
+        100% {
+            transform: translate3d(0px, -45%, 0px);
+        }
+    }
+    
+    @keyframes appbtnmoveup {
+        0% {
+            transform: translate3d(0px, 0px, 0px);
+        }
+        // 75% {
+        //     transform: translate3d(0px, -10%, 0px);
+        // }
+        // 85% {
+        //     transform: translate3d(0px, -50%, 0px);
+        // }
+        // 95% {
+        //     transform: translate3d(0px, -70%, 0px);
+        // }
+        100% {
+            transform: translate3d(0px, -90%, 0px);
+        }
+    }
+    /*Dot style */
+    
+    .dotstyle ul {
+        position: relative;
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        cursor: default;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    .dotstyle li {
+        position: relative;
+        display: block;
+        float: left;
+        margin: 0 6px;
+        width: 6px;
+        height: 6px;
+        cursor: pointer;
+    }
+    
+    .dotstyle li a {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        outline: none;
+        border-radius: 50%;
+        background-color: #fff;
+        background-color: rgba(255, 255, 255, 0.3);
+        text-indent: -999em;
+        /* make the text accessible to screen readers */
+        cursor: pointer;
+        position: absolute;
+    }
+    
+    .dotstyle li a:focus {
+        outline: none;
+    }
+    
+    .dotstyle-scaleup li a {
+        -webkit-transition: -webkit-transform 0.3s ease, background-color 0.3s ease;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .dotstyle-scaleup li a:hover,
+    .dotstyle-scaleup li a:focus {
+        background-color: white;
+    }
+    
+    .dotstyle-scaleup li.current a {
+        background-color: white;
+        -webkit-transform: scale(1.5);
+        transform: scale(1.5);
+    }</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
         <description/>
@@ -570,7 +1906,7 @@
         <link/>
         <name>COLS App Details</name>
         <option_schema/>
-        <public>false</public>
+        <public>true</public>
         <roles/>
         <script><![CDATA[(function() {
     /* populate the 'data' object */
@@ -579,56 +1915,168 @@
         if (input.action == 'getAppData') {
             console.log(input.sysid);
             data.appData = {};
-            data.appArtifacts = {};
-            data.appArtifacts.experience = [];
-            data.appArtifacts.automation = [];
-            data.appArtifacts.integration = [];
-            data.appArtifacts.insight = [];
-            data.appRepos = [];
+            data.appArtifacts = [];
+
             var appgr = new GlideRecord('x_snc_city_app');
-            appgr.addQuery('sys_id', input.sysid);
             appgr.addQuery('active', true);
             appgr.query();
-            if (appgr.next()) {
+            while (appgr.next()) {
                 var obj = {};
-                $sp.getRecordElements(obj, appgr, 'app_gradient_2,app_gradient_1,name,sys_id,flag_text,overview_video,description,screenshot,home_page_icon,architecture_image,architecture_heading,architecture_text,repositories_heading,repositories_text,overview_video,repo_help');
-                data.appData = obj;
-
+                $sp.getRecordElements(obj, appgr, 'app_gradient_2,app_gradient_1,name,sys_id,flag_text,overview_video,description,screenshot,home_page_icon,architecture_image,architecture_heading,architecture_text,repositories_heading,repositories_text,overview_video,repo_help,path,mobile_banner');
+                var appObj = {};
+                appObj.name = obj.name.display_value;
+                appObj.sys_id = obj.sys_id.display_value;
+                appObj.artifacts = [];
+                getArtifactsList(appObj);
+                data.appArtifacts.push(appObj);
+                if (input.sysid == obj.sys_id.display_value) {
+                    data.appData = obj;
+                }
             }
 
-            var artifactGr = new GlideRecord('x_snc_city_app_artifact');
+
+
+
+            // var artifactGr = new GlideRecord('x_snc_city_app_artifact');
+            // artifactGr.addQuery('app', input.sysid);
+            // artifactGr.addQuery('active', true);
+            // artifactGr.query();
+            // while (artifactGr.next()) {
+            //     var obj = {};
+            //     $sp.getRecordElements(obj, artifactGr, 'capability,type,level,heading,text,app_experience,dev_experience,background_gradient1,background_gradient2');
+
+            //     if (obj.type.display_value == 'Experience') {
+            //         experience.data.push(obj);
+            //     }
+            //     if (obj.type.display_value == 'Automation') {
+            //         automation.data.push(obj);
+            //     }
+            //     if (obj.type.display_value == 'Integration') {
+            //         integration.data.push(obj);
+            //     }
+            //     if (obj.type.display_value == 'Insight') {
+            //         insight.data.push(obj);
+            //     }
+
+
+            // }
+            // data.appArtifacts.push(experience);
+            // data.appArtifacts.push(automation);
+            // data.appArtifacts.push(integration);
+            // data.appArtifacts.push(insight);
+
+            // var appRepos = new GlideRecord('x_snc_city_app_repo');
+            // appRepos.addQuery('app', input.sysid);
+            // appRepos.addQuery('active', true);
+            // appRepos.query();
+            // while (appRepos.next()) {
+            //     var obj = {};
+            //     $sp.getRecordElements(obj, appRepos, 'short_description,version,url');
+            //     // data.appRepos.push(obj);
+
+            //     repositories.list.push(obj);
+            // }
+            // data.appArtifacts.push(repositories);
+
+
+        }
+        if (input.action == 'getArtifactDetails') {
+            data.selectedArtifact = {};
+            var artifactGr = new GlideRecord('x_snc_city_app_artifacts_types');
             artifactGr.addQuery('app', input.sysid);
-            artifactGr.addQuery('active', true);
+            artifactGr.addQuery('type', input.artifact_type);
+            artifactGr.orderBy('order');
             artifactGr.query();
             while (artifactGr.next()) {
                 var obj = {};
-                $sp.getRecordElements(obj, artifactGr, 'capability,type,level,heading,text,app_experience,dev_experience,background_gradient1,background_gradient2');
-
-                if (obj.type.display_value == 'Experience') {
-                    data.appArtifacts.experience.push(obj);
+                $sp.getRecordElements(obj, artifactGr, 'sys_id,type,heading,short_description,description,gradient_start,gradient_end');
+                obj.artifacts = [];
+                obj.artifacts = getArtifactsForType(obj.sys_id.display_value, input.sysid);
+                obj.learnMore = getLearnMoreLinks(obj.sys_id.display_value, input.sysid);
+                if (input.artifact_type == 'Installation') {
+                    obj.appRepos = [];
+                    var appRepos = new GlideRecord('x_snc_city_app_repo');
+                    appRepos.addQuery('app', input.sysid);
+                    appRepos.addQuery('active', true);
+                    appRepos.query();
+                    while (appRepos.next()) {
+                        var tempobj = {};
+                        $sp.getRecordElements(tempobj, appRepos, 'short_description,version,url');
+                        obj.appRepos.push(tempobj);
+                    }
                 }
-                if (obj.type.display_value == 'Automation') {
-                    data.appArtifacts.automation.push(obj);
-                }
-                if (obj.type.display_value == 'Integration') {
-                    data.appArtifacts.integration.push(obj);
-                }
-                if (obj.type.display_value == 'Insight') {
-                    data.appArtifacts.insight.push(obj);
-                }
+                data.selectedArtifact = obj;
 
             }
-            var appRepos = new GlideRecord('x_snc_city_app_repo');
-            appRepos.addQuery('app', input.sysid);
-            appRepos.addQuery('active', true);
-            appRepos.query();
-            while (appRepos.next()) {
-                var obj = {};
-                $sp.getRecordElements(obj, appRepos, 'short_description,version,url');
-                data.appRepos.push(obj);
+        }
+
+    }
+
+    function getArtifactsForType(typeSysID, appSysID) {
+        var tempObj = [];
+        var artifactGr = new GlideRecord('x_snc_city_app_artifact');
+        artifactGr.addQuery('app', appSysID);
+        artifactGr.addQuery('type', typeSysID);
+        artifactGr.addQuery('active', true);
+        artifactGr.orderBy('order');
+        artifactGr.query();
+        while (artifactGr.next()) {
+            var obj = {};
+            $sp.getRecordElements(obj, artifactGr, 'sys_id,type,heading,text,app_experience,dev_experience,order,coupled_image_caption,integrated_app_icon,flip_image_sequence,display_layout');
+            if (obj.type.display_value == 'Installation') {
+                obj.html = artifactGr.installation_details.text.getDisplayValue();
+                // return obj;
             }
+            tempObj.push(obj);
+        }
+        return tempObj;
+    };
 
+    function getLearnMoreLinks(typeSysID) {
+        var tempObj = [];
+        var artifactGr = new GlideRecord('x_snc_city_learn_more_links');
+        artifactGr.addQuery('app_artifact_type', typeSysID);
+        artifactGr.orderBy('order');
+        artifactGr.query();
+        while (artifactGr.next()) {
+            var obj = {};
+            $sp.getRecordElements(obj, artifactGr, 'sys_id,display_text,url');
+            tempObj.push(obj);
+        }
+        return tempObj;
+    };
 
+    function getArtifactsList(appObj) {
+        var sysChoice = new GlideRecord('sys_choice');
+        sysChoice.addQuery('name', 'x_snc_city_app_artifacts_types');
+        sysChoice.addQuery('inactive', false);
+        sysChoice.addQuery('element', 'type');
+        sysChoice.orderBy('sequence');
+
+        sysChoice.query();
+        console.log(sysChoice.getRowCount());
+        while (sysChoice.next()) {
+            var obj = {};
+            //$sp.getRecordElements(obj, appgr, 'label,value,sys_id');
+            obj.value = sysChoice.value.toString();
+            obj.label = sysChoice.label.toString();
+            obj.sys_id = sysChoice.sys_id.toString();
+            var gradientObj = getGradients(obj.value);
+            obj.gradient1 = gradientObj.gradient1;
+            obj.gradient2 = gradientObj.gradient2;
+            appObj.artifacts.push(obj);
+        }
+    }
+
+    function getGradients(type) {
+        var artifactGr = new GlideRecord('x_snc_city_app_artifacts_types');
+        artifactGr.addQuery('type', type);
+        artifactGr.query();
+        if (artifactGr.next()) {
+            var obj = {};
+            obj.gradient1 = artifactGr.gradient_start.toString();
+            obj.gradient2 = artifactGr.gradient_end.toString();
+            return obj;
         }
     }
 })();]]></script>
@@ -638,7 +2086,7 @@
         <sys_created_on>2017-06-28 20:36:13</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>58d22d87db2fb20087c1fd441d961904</sys_id>
-        <sys_mod_count>715</sys_mod_count>
+        <sys_mod_count>2190</sys_mod_count>
         <sys_name>COLS App Details</sys_name>
         <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
         <sys_policy/>
@@ -646,83 +2094,39 @@
         <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
         <sys_update_name>sp_widget_58d22d87db2fb20087c1fd441d961904</sys_update_name>
         <sys_updated_by>sush.chandrashekar</sys_updated_by>
-        <sys_updated_on>2017-07-14 19:48:14</sys_updated_on>
-        <template><![CDATA[<div class="app-details">
+        <sys_updated_on>2017-08-10 17:50:39</sys_updated_on>
+        <template><![CDATA[<div class="app-details col-md-12 col-sm-12 col-xs-12 hidden-xs">
 
-    <div class="main-div">
-        <div class="flex-these three-column ">
-            <div class="dev-details-div">
+    <div class="main-div col-md-9 col-sm-9">
+        <div class="details-container container">
+            <div class="dev-details-div setscreenheight" ng-show="!$root.userSelectedArtifact">
                 <!--stock image -->
                 <div class="stock-image" ng-show="!c.developSlideShow">
-                    <div class="avatar-name-image">
-                        <div class="exp" ng-style="{'background-image':'url('+c.data.appData.home_page_icon.display_value+')'}">
-                            <!--<img ng-src={{c.data.appData.home_page_icon.display_value}}/>-->
-                        </div>
-                        <div class="name">
-                            <p>Shiela & Tim</p>
-                        </div>
-                    </div>
+                    <div class="flex-display">
+                        <div class="avatar-name-image">
+                            <div class="exp" ng-style="{'background-image':'url('+c.data.appData.home_page_icon.display_value+')'}">
+                                <!--<img ng-src={{c.data.appData.home_page_icon.display_value}}/>-->
+                            </div>
 
-                    <button class="col-btns btn" ng-click="c.showAppTour()">APP TOUR</button>
-                    <button class="col-btns btn" ng-click="c.showLiveApp()">TRY LIVE</button>
-                    <button class="col-btns btn visible-xs" ng-click="c.startMobileSlideShow()">DEVelop</button>
+                        </div>
+                        <p class="app-name">{{c.data.appData.name.display_value}}</p>
+                        <p class="description">{{c.data.appData.description.display_value}}</p>
+                        <!--<button ng-style="{'background-image': 'linear-gradient(to bottom, '+c.data.appData.app_gradient_1.display_value +','+ c.data.appData.app_gradient_2.display_value+')'}" class="col-btns btn" ng-click="c.showAppTour('desktop')"> TOUR</button>
+                        <button ng-style="{'background-image': 'linear-gradient(to bottom, '+c.data.appData.app_gradient_1.display_value +','+ c.data.appData.app_gradient_2.display_value+')'}" class="col-btns btn" ng-click="c.showLiveApp('desktop')"> launch</button>-->
+                        <button class="col-btns btn top-btn" ng-click="c.showAppTour('desktop')"> TOUR</button>
+                        <button class="col-btns btn bottom-btn" ng-click="c.showLiveApp('desktop')"> launch</button>
+                        <!--<button class="col-btns btn visible-xs" ng-click="c.startMobileSlideShow()">DEVelop</button>-->
+                    </div>
                 </div>
                 <!-- app view -->
                 <div class="app-view" ng-class="{'reduce-height':c.displayDevDetails}" ng-show="!c.developSlideShow">
-                    <!--<source src="https://servicenow.box.com/shared/static/jqv05jhlyuujfzvad3o8fa2sjzeootb3.mp4" type="video/mp4">-->
                     <div ng-show="!c.showVideo && !c.showLive" class="app-image">
                         <img src="{{c.centerImage}}" />
                     </div>
-                    <!--<video class="video-player" controls ng-show="c.showVideo">
-                      <source ng-src="{{c.data.appData.overview_video.display_value | trustUrl}}" type="video/mp4">
-
-                      Your browser does not support HTML5 video.
-                     </video>-->
-
                     <video id="tourVideo" ng-show="c.showVideo && !c.showLive" class="video-player" controls="controls" name="Video Name" src="{{c.data.appData.overview_video.display_value | trustUrl}}"></video>
-
-
-
-                    <iframe id="live-app" ng-show="c.showLive" src="https://cityoflightspeeddev.service-now.com/guide" name="myIframe"></iframe>
+                    <iframe id="live-app" ng-show="c.showLive" ng-src="{{c.data.appData.path.display_value}}" name="myIframe"></iframe>
                 </div>
                 <!--detail viewer-->
-                <div class="detail-viewer hidden-xs" ng-class="{'expand-details':c.displayDevDetails}" ng-style="{'background-image': 'linear-gradient(to bottom, '+c.bgGradient.background_gradient1 +','+ c.bgGradient.background_gradient2+')'}">
-                    <div class="category-viewer " ng-show="c.detailType == 'explainKeyTerms'">
-                        <div class="static">
-                            <img src="{{c.displayStatic}}" />
-                            <div class="page-buttons" ng-show="c.displayData.length > 1">
-                                <button ng-style="{'background-image': 'linear-gradient(to bottom, '+c.bgGradient.background_gradient1 +','+ c.bgGradient.background_gradient2+')'}" ng-click="c.switchImage(eachData)" ng-repeat="eachData in c.displayData track by $index" class="btn btn-default">{{$index+1}}</button>
-                            </div>
-                        </div>
-                        <div class="gif"><img src="{{c.displayGif}}" /></div>
-
-                    </div>
-                    <div class="app-related-data" ng-show="c.detailType == 'appRelatedStuff'">
-                        <div class="architecture-image" ng-show="c.appRelatedType == 'architecture'">
-
-                            <img src="{{c.architectureImage}}" />
-
-                            <div class="divider">
-                                <a ng-href="/city?{{c.data.appData.repo_help.display_value}}" target="_blank">
-                                    <img src="download.svg" />
-                                </a>
-                                <a ng-href="/{{c.architectureImage}}" target="_blank">
-                                    <img src="fullscreen.svg" />
-                                </a>
-                            </div>
-                        </div>
-                        <div class="repo-holder" ng-show="c.appRelatedType == 'repositories'">
-                            <div class="each-repo" ng-repeat="repo in  c.data.appRepos">
-                                <a ng-href="{{repo.url.display_value}}" target="_blank">{{repo.url.display_value}}</a> | <span>{{repo.version.display_value}}</span>
-                            </div>
-                            <div class="divider">
-                                <a ng-href="/city?{{c.data.appData.repo_help.display_value}}" target="_blank">HELP</a>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="visible-xs mobile-detail-viewer" ng-show="c.developSlideShow">
                     <img ng-show="c.detailType == 'explainKeyTerms'" src="{{c.displayGif}}" />
                     <div class="app-related-data" ng-show="c.detailType == 'appRelatedStuff'">
@@ -739,141 +2143,470 @@
 
                 </div>
 
-                <!--<i ng-show="c.displayDevDetails" class="fa fa-2x fa-chevron-right collapse-icon hidden-xs" aria-hidden="true" ng-click="c.displayDevDetails = false;"></i>-->
-                <img ng-show="c.displayDevDetails" class="collapse-icon hidden-xs" aria-hidden="true" ng-click="c.displayDevDetails = false;" src="back-icon.png" />
 
-                <div class="dev-center hidden-xs">
-                    <p>develop</p>
-                    <button class="col-btns btn" ng-click="c.showDevDetails('appRelatedStuff', 'architecture')">architecture</button>
-                    <button class="col-btns btn" ng-click="c.showDevDetails('appRelatedStuff', 'repositories')">repositories</button>
-                    <button class="col-btns  col-btn-consumerization btn" ng-click="c.showDevDetails('explainKeyTerms', 'experience')">Experience</button>
-                    <button class="col-btns col-btn-automation btn" ng-click="c.showDevDetails('explainKeyTerms', 'automation')">automation</button>
-                    <button class="col-btns col-btn-integration btn" ng-click="c.showDevDetails('explainKeyTerms', 'integration')">integration</button>
-                    <button class="col-btns col-btn-insight btn" ng-click="c.showDevDetails('explainKeyTerms', 'insight')">Insight</button>
-                </div>
             </div>
 
+            <div class="setscreenheightmin artifact-details" ng-show="$root.userSelectedArtifact">
+
+
+                <div class="heading-part">
+                    <h1 class="page-heading">{{c.data.selectedArtifact.heading.display_value}}</h1>
+                    <p class="page-short-description">{{c.data.selectedArtifact.short_description.display_value}}</p>
+                </div>
+                <p class="page-description text-left" ng-if="c.data.selectedArtifact.description.display_value" ng-bind-html="c.data.selectedArtifact.description.display_value"></p>
+
+                <div class="each-integration-section" ng-repeat="eachInt in c.data.selectedArtifact.artifacts" ng-show="eachInt.display_layout.display_value == 'Integration Display With App icon'">
+                    <div class="app-icon-description-section col-md-12">
+                        <div class="app-icon col-md-3">
+                            <img ng-src="{{eachInt.integrated_app_icon.display_value}}" />
+                        </div>
+                        <div class="integration-description col-md-9">
+                            <div class="head"> {{eachInt.heading.display_value}}</div>
+                            <div class="text"> {{eachInt.text.display_value}}</div>
+                        </div>
+                    </div>
+                    <div class="app-dev-images" ng-if="!eachInt.flip_image_sequence.display_value && eachInt.dev_experience.display_value && eachInt.app_experience.display_value">
+                        <div class="dev-screenshot">
+                            <img ng-src="{{eachInt.dev_experience.display_value}}" />
+                        </div>
+                        <div class="app-screenshot">
+                            <img ng-src="{{eachInt.app_experience.display_value}}" />
+                        </div>
+                    </div>
+                    <div ng-if="!eachInt.flip_image_sequence.display_value && eachInt.dev_experience.display_value && eachInt.app_experience.display_value" class="caption">{{eachInt.coupled_image_caption.display_value}}</div>
+
+                    <div class="app-dev-images col-md-12" ng-if="eachInt.flip_image_sequence.display_value && eachInt.dev_experience.display_value && eachInt.app_experience.display_value">
+                        <div class="dev-screenshot col-md-9">
+                            <img ng-src="{{eachInt.dev_experience.display_value}}" />
+                        </div>
+                        <div class="app-screenshot col-md-3">
+                            <img ng-src="{{eachInt.app_experience.display_value}}" />
+                        </div>
+                    </div>
+                    <div ng-if="eachInt.flip_image_sequence.display_value && eachInt.dev_experience.display_value && eachInt.app_experience.display_value" class="caption">{{eachInt.coupled_image_caption.display_value}}</div>
+
+                    <div class="dev-image col-md-12" ng-if="eachInt.dev_experience.display_value && !eachInt.app_experience.display_value">
+                        <img ng-src="{{eachInt.dev_experience.display_value}}" />
+                    </div>
+
+                    <div class="app-image col-md-4" ng-if="!eachInt.dev_experience.display_value && eachInt.app_experience.display_value">
+                        <img ng-src="{{eachInt.app_experience.display_value}}" />
+                    </div>
+
+
+                </div>
+                <div ng-show="$root.userSelectedArtifact != 'Installation'" class="artifact-sections" ng-repeat="eachArtifactDetail in c.data.selectedArtifact.artifacts">
+                    <div class="col-md-12 text-top-image-bottom" ng-show="eachArtifactDetail.display_layout.display_value == 'Text Top Image Bottom'">
+                        <div class="col-md-12 remove-padding">
+
+                            <p class="content-text">
+                                {{eachArtifactDetail.text.display_value}}
+                            </p>
+                        </div>
+
+                        <div ng-show="eachArtifactDetail.dev_experience.display_value && !eachArtifactDetail.app_experience.display_value" class="col-md-12 dev-image"><img ng-src={{eachArtifactDetail.dev_experience.display_value}} /></div>
+
+                        <div class="app-dev-images col-md-12" ng-if="eachArtifactDetail.flip_image_sequence.display_value && eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value">
+                            <div class="dev-screenshot col-md-9">
+                                <img ng-src="{{eachArtifactDetail.dev_experience.display_value}}" />
+                            </div>
+                            <div class="app-screenshot col-md-3">
+                                <img ng-src="{{eachArtifactDetail.app_experience.display_value}}" />
+                            </div>
+                        </div>
+                        <div class="app-dev-images" ng-if="!eachArtifactDetail.flip_image_sequence.display_value && eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value">
+                            <div class="dev-screenshot">
+                                <img ng-src="{{eachArtifactDetail.dev_experience.display_value}}" />
+                            </div>
+                            <div class="app-screenshot">
+                                <img ng-src="{{eachArtifactDetail.app_experience.display_value}}" />
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="col-md-12 text-top-image-bottom" ng-show="eachArtifactDetail.display_layout.display_value == 'Top Image text Bottom'">
+                        <div ng-show="eachArtifactDetail.dev_experience.display_value && !eachArtifactDetail.app_experience.display_value" class="col-md-12 dev-image"><img ng-src={{eachArtifactDetail.dev_experience.display_value}} /></div>
+                        <div ng-show="!eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value" class="col-md-5 app-image"><img ng-src={{eachArtifactDetail.app_experience.display_value}} /></div>
+
+                        <div class="app-dev-images col-md-12" ng-if="eachArtifactDetail.flip_image_sequence.display_value && eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value">
+                            <div class="dev-screenshot col-md-9">
+                                <img ng-src="{{eachArtifactDetail.dev_experience.display_value}}" />
+                            </div>
+                            <div class="app-screenshot col-md-3">
+                                <img ng-src="{{eachArtifactDetail.app_experience.display_value}}" />
+                            </div>
+                        </div>
+                        <div class="app-dev-images" ng-if="!eachArtifactDetail.flip_image_sequence.display_value && eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value">
+                            <div class="dev-screenshot">
+                                <img ng-src="{{eachArtifactDetail.dev_experience.display_value}}" />
+                            </div>
+                            <div class="app-screenshot">
+                                <img ng-src="{{eachArtifactDetail.app_experience.display_value}}" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+
+                            <p class="content-text">
+                                {{eachArtifactDetail.text.display_value}}
+                            </p>
+                        </div>
+
+
+
+
+                    </div>
+                    <div class="col-md-12 text-right-image-left" ng-show="eachArtifactDetail.display_layout.display_value == 'Text right Image left'">
+
+                        <div class="col-md-6"><img ng-src={{eachArtifactDetail.dev_experience.display_value}} /></div>
+                        <div class="text-part col-md-6">
+                            <div>
+                                <p class="one-line-header">
+                                    {{eachArtifactDetail.capability.display_value}}
+                                </p>
+                                <p class="content-text">
+                                    {{eachArtifactDetail.text.display_value}}
+                                </p>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class=" text-right-image-left" ng-show="eachArtifactDetail.display_layout.display_value == 'Text left Image right'">
+                        <div class="text-part col-md-6">
+                            <div>
+                                <p class="one-line-header">
+                                    {{eachArtifactDetail.capability.display_value}}
+                                </p>
+                                <p class="content-text">
+                                    {{eachArtifactDetail.text.display_value}}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6"><img ng-src={{eachArtifactDetail.dev_experience.display_value}} /></div>
+
+                    </div>
+
+
+                </div>
+                <div ng-show="$root.userSelectedArtifact == 'Installation'" class="artifact-installation col-md-12 repo-holder remove-padding" ng-repeat="eachArtifactDetail in c.data.selectedArtifact.artifacts">
+                    <!--<p class="content-text">
+                        {{eachArtifactDetail.text.display_value}}
+                    </p>
+                    <div class="each-repo" ng-repeat="repo in  eachArtifactDetail.appRepos">
+                        <a ng-href="{{repo.url.display_value}}" target="_blank">{{repo.url.display_value}}</a> | <span>{{repo.version.display_value}}</span>
+                    </div>
+                    <div class="divider">
+                        <a ng-href="/city?{{c.data.appData.repo_help.display_value}}" target="_blank">HELP</a>
+
+                    </div>-->
+                    <div ng-bind-html="c.html"></div>
+                    <div class="section">
+                        <div class="heading">Repository links</div>
+                        <div class="each-repo" ng-repeat="repo in c.appRepos">
+                            <a ng-href="{{repo.url.display_value}}" target="_blank">{{repo.short_description.display_value}}</a> | <span>{{repo.version.display_value}}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="learn-more" ng-show="c.data.selectedArtifact.learnMore.length > 0">
+                    <div class="exp"><span>Learn MOre</span></div>
+                    <div class="learn-more-links">
+                        <a ng-href="{{eachlearn.url.display_value}}" ng-repeat="eachlearn in c.data.selectedArtifact.learnMore" target="_blank">» {{eachlearn.display_text.display_value}}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="image-switcher-arrows" ng-show="c.developSlideShow">
+                <img ng-class="{'disabled': c.slideIndex == 0}" class="rotate" src="back-icon.png" ng-click="c.previousSlide()" />
+                <img ng-class="{'disabled': c.slideIndex == c.mobileSlideShow.length-1}" src="back-icon.png" ng-click="c.nextSlide()" />
+            </div>
         </div>
-        <div class="image-switcher-arrows" ng-show="c.developSlideShow">
-            <img ng-class="{'disabled': c.slideIndex == 0}" class="rotate" src="back-icon.png" ng-click="c.previousSlide()" />
-            <img ng-class="{'disabled': c.slideIndex == c.mobileSlideShow.length-1}" src="back-icon.png" ng-click="c.nextSlide()" />
+
+    </div>
+
+</div>
+<!--################################side bar##################################-->
+
+
+<div class="col-md-3 col-sm-3 side-bar setscreenheight hidden-xs" ng-class="{'show-side-bar':$root.showDetail}">
+
+    <!--<img class="collapse-arrow" ng-click="c.hideDetail()" src="back_to_city.png" />-->
+    <img class="collapse-arrow" ng-click="c.hideDetail()" src="cols.png" />
+    <div class="names">
+        <h3 class="site-name" ng-click="c.hideDetail()">City Of Lightspeed</h3>
+        <div ng-repeat="eachApp in c.data.appArtifacts">
+            <div class="app-name-collapse" ng-class="{'active': eachApp.sys_id == c.searchObject.sys_id }">
+                <a class="app-name" ng-href="/city?sys_id={{eachApp.sys_id}}">{{eachApp.name}}</a>
+                <img src="back-icon.png" class="collapse-icon" />
+            </div>
+            <div class="artifatcs-list" ng-show="eachApp.sys_id == c.searchObject.sys_id">
+                <div class="each-artifact-type" ng-repeat="eachartifact in eachApp.artifacts">
+                    <div class="desktop-pill {{eachartifact.value}}-gradient-pill"></div>
+                    <a ng-href="/city?sys_id={{eachApp.sys_id}}&artifact_type={{eachartifact.value}}" class="link-highlighters" ng-class="{'{{eachartifact.value}}-gradient':eachartifact.value == c.searchObject.artifact_type }">
+                            {{eachartifact.value}}
+                        </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<!--#######################################side bar end###################################-->
+<!-- #####################################MObile portion starts here##################################### -->
+<div class="mobile-app-details col-xs-12 visible-xs setscreenheightforhome" ng-class="{'unoverflow': $root.startDetailDisplay}">
+    <div class="app-metadata" ng-show="! $root.startDetailDisplay">
+        <div class="mobile-banner" ng-style="{'background-image':'url('+c.data.appData.mobile_banner.display_value+')'}">
 
-<!--testing something-->
-<div class="app-details">
+        </div>
 
-    <div class="main-div">
-        <div class="flex-these three-column ">
-            <div class="dev-details-div">
-                <!--stock image -->
-                <div class="stock-image" ng-show="!c.developSlideShow">
-                    <div class="avatar-name-image">
-                        <div class="exp" ng-style="{'background-image':'url('+c.data.appData.home_page_icon.display_value+')'}">
-                            <!--<img ng-src={{c.data.appData.home_page_icon.display_value}}/>-->
-                        </div>
-                        <div class="name">
-                            <p>Shiela & Tim</p>
-                        </div>
+        <div class="app-details-mobile" ng-class="{'translatez-for-sidebar':!$root.showDetail}">
+            <div class="left-part">
+                <div class="image-video" ng-class="{'translate-this':$root.showDetail}">
+                    <div ng-show="!c.showVideo" class="app-image">
+                        <img ng-src="{{c.data.appData.screenshot.display_value}}" />
                     </div>
-
-                    <button class="col-btns btn" ng-click="c.showAppTour()">APP TOUR</button>
-                    <button class="col-btns btn" ng-click="c.showLiveApp()">TRY LIVE</button>
-                    <button class="col-btns btn visible-xs" ng-click="c.startMobileSlideShow()">DEVelop</button>
-                </div>
-                <!-- app view -->
-                <div class="app-view" ng-class="{'reduce-height':c.displayDevDetails}" ng-show="!c.developSlideShow">
-                    <!--<source src="https://servicenow.box.com/shared/static/jqv05jhlyuujfzvad3o8fa2sjzeootb3.mp4" type="video/mp4">-->
-                    <div ng-show="!c.showVideo && !c.showLive" class="app-image">
-                        <img src="{{c.centerImage}}" />
-                    </div>
-                    <!--<video class="video-player" controls ng-show="c.showVideo">
-                      <source ng-src="{{c.data.appData.overview_video.display_value | trustUrl}}" type="video/mp4">
-
-                      Your browser does not support HTML5 video.
-                     </video>-->
-
-                    <video id="tourVideo" ng-show="c.showVideo && !c.showLive" class="video-player" controls="controls" name="Video Name" src="{{c.data.appData.overview_video.display_value | trustUrl}}"></video>
-
-
-
-                    <iframe id="live-app" ng-show="c.showLive" src="https://cityoflightspeeddev.service-now.com/guide" name="myIframe"></iframe>
-                </div>
-                <!--detail viewer-->
-                <div class="detail-viewer hidden-xs" ng-class="{'expand-details':c.displayDevDetails}" ng-style="{'background-image': 'linear-gradient(to bottom, '+c.bgGradient.background_gradient1 +','+ c.bgGradient.background_gradient2+')'}">
-                    <div class="category-viewer " ng-show="c.detailType == 'explainKeyTerms'">
-                        <div class="static">
-                            <img src="{{c.displayStatic}}" />
-                            <div class="page-buttons" ng-show="c.displayData.length > 1">
-                                <button ng-style="{'background-image': 'linear-gradient(to bottom, '+c.bgGradient.background_gradient1 +','+ c.bgGradient.background_gradient2+')'}" ng-click="c.switchImage(eachData)" ng-repeat="eachData in c.displayData track by $index" class="btn btn-default">{{$index+1}}</button>
-                            </div>
-                        </div>
-                        <div class="gif"><img src="{{c.displayGif}}" /></div>
-
-                    </div>
-                    <div class="app-related-data" ng-show="c.detailType == 'appRelatedStuff'">
-                        <div class="architecture-image" ng-show="c.appRelatedType == 'architecture'">
-
-                            <img src="{{c.architectureImage}}" />
-
-                            <div class="divider">
-                                <a ng-href="/city?{{c.data.appData.repo_help.display_value}}" target="_blank">
-                                    <img src="download.svg" />
-                                </a>
-                                <a ng-href="/{{c.architectureImage}}" target="_blank">
-                                    <img src="fullscreen.svg" />
-                                </a>
-                            </div>
-                        </div>
-                        <div class="repo-holder" ng-show="c.appRelatedType == 'repositories'">
-                            <div class="each-repo" ng-repeat="repo in  c.data.appRepos">
-                                <a ng-href="{{repo.url.display_value}}" target="_blank">{{repo.url.display_value}}</a> | <span>{{repo.version.display_value}}</span>
-                            </div>
-                            <div class="divider">
-                                <a ng-href="/city?{{c.data.appData.repo_help.display_value}}" target="_blank">HELP</a>
-
-                            </div>
-                        </div>
-                    </div>
+                    <video id="mobiletourVideo" ng-show="c.showVideo" class="app-image" controls="controls" name="Video Name" src="{{c.data.appData.overview_video.display_value | trustUrl}}"></video>
                 </div>
 
-                <div class="visible-xs mobile-detail-viewer" ng-show="c.developSlideShow">
-                    <img ng-show="c.detailType == 'explainKeyTerms'" src="{{c.displayGif}}" />
-                    <div class="app-related-data" ng-show="c.detailType == 'appRelatedStuff'">
-                        <div class="architecture-image" ng-show="c.appRelatedType == 'architecture'">
-                            <img src="{{c.architectureImage}}" />
+                <div class="buttons-group-mobile col-xs-12" ng-class="{'translate-this-btn':$root.showDetail}">
+                    <button class="btn btn-first btn-mobile" ng-click="c.showAppTour('mobile')">Watch a tour</button>
+                    <button class="btn btn-middle btn-mobile" ng-click="c.showLiveApp('mobile')">launch app</button>
+                    <button class="btn btn-last btn-mobile" ng-click="c.learnToBuild()">learn to build</button>
+                </div>
+            </div>
+            <div class="right-part">
+                <p class="app-name">{{c.data.appData.name.display_value}}</p>
+                <p class="description">{{c.data.appData.description.display_value}}</p>
+            </div>
+
+            <div class="bottom-buttons">
+                <div class="go-home" ng-click="c.hideDetail()">
+                    back to city of lightspeed
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show=" $root.startDetailDisplay" class="dev-details-mobile">
+        <div class="section-learn-to-build" ng-show="!$root.userSelectedArtifact">
+            <div class="banner-app-intro">
+                <div class="app-screen"><img ng-src="{{c.data.appData.screenshot.display_value}}" /></div>
+                <div class="app-name-text">
+                    <p class="app-name">{{c.data.appData.name.display_value}}</p>
+                    <p class="intro">A Section by section guide how this example app was built and all the tools needed to do it yourself.
+                    </p>
+                </div>
+            </div>
+            <div class="artifatcs-list">
+                <div ng-click="c.selectArtifact(eachartifact,$index)" class="each-artifact-mobile" ng-repeat="eachartifact in c.currentArtifact track by $index">
+                    <div class="color-pill {{eachartifact.value}}-gradient-pill" ng-class=""></div>
+                    <a href="javascript:void(0)" class="link-highlighters" ng-class="{'{{eachartifact.value}}-gradient':eachartifact.value == c.searchObject.artifact_type }">
+                                {{eachartifact.value}}
+                            </a>
+                </div>
+            </div>
+        </div>
+        <div class="content-sections artifact-details" ng-show="$root.userSelectedArtifact">
+            <div class="heading-part">
+                <h1 class="page-heading">{{c.data.selectedArtifact.heading.display_value}}</h1>
+                <p class="page-short-description">{{c.data.selectedArtifact.short_description.display_value}}</p>
+            </div>
+            <p class="page-description" ng-if="c.data.selectedArtifact.description.display_value" ng-bind-html="c.data.selectedArtifact.description.display_value"></p>
+            <!--############################INtegration ###############################-->
+            <div class="each-integration-section" ng-repeat="eachInt in c.data.selectedArtifact.artifacts" ng-show="eachInt.display_layout.display_value == 'Integration Display With App icon'">
+                <div class="col-md-12 col-xs-12 remove-padding">
+                    <div class="app-icon-description-section">
+                        <div class=" app-icon col-md-3 col-xs-3">
+                            <img ng-src="{{eachInt.integrated_app_icon.display_value}}" />
+                        </div>
+                        <div class="integration-description col-md-9 col-xs-9">
+                            <div class="head"> {{eachInt.heading.display_value}}</div>
 
                         </div>
-                        <div class="repo-holder" ng-show="c.appRelatedType == 'repositories'">
-                            <div class="each-repo" ng-repeat="repo in  c.data.appRepos">
-                                <a ng-href="{{repo.url.display_value}}" target="_blank">{{repo.url.display_value}}</a> | <span>{{repo.version.display_value}}</span>
-                            </div>
-                        </div>
                     </div>
+                    <div class="text"> {{eachInt.text.display_value}}</div>
 
                 </div>
 
-                <!--<i ng-show="c.displayDevDetails" class="fa fa-2x fa-chevron-right collapse-icon hidden-xs" aria-hidden="true" ng-click="c.displayDevDetails = false;"></i>-->
-                <img ng-show="c.displayDevDetails" class="collapse-icon hidden-xs" aria-hidden="true" ng-click="c.displayDevDetails = false;" src="back-icon.png" />
+                <div ng-if="!eachInt.flip_image_sequence.display_value && eachInt.dev_experience.display_value && eachInt.app_experience.display_value" class="caption">{{eachInt.coupled_image_caption.display_value}}</div>
 
-                <div class="dev-center hidden-xs">
-                    <p>develop</p>
-                    <button class="col-btns btn" ng-click="c.showDevDetails('appRelatedStuff', 'architecture')">architecture</button>
-                    <button class="col-btns btn" ng-click="c.showDevDetails('appRelatedStuff', 'repositories')">repositories</button>
-                    <button class="col-btns  col-btn-consumerization btn" ng-click="c.showDevDetails('explainKeyTerms', 'experience')">Experience</button>
-                    <button class="col-btns col-btn-automation btn" ng-click="c.showDevDetails('explainKeyTerms', 'automation')">automation</button>
-                    <button class="col-btns col-btn-integration btn" ng-click="c.showDevDetails('explainKeyTerms', 'integration')">integration</button>
-                    <button class="col-btns col-btn-insight btn" ng-click="c.showDevDetails('explainKeyTerms', 'insight')">Insight</button>
+                <div class="app-dev-images col-md-12 col-xs-12" ng-if="eachInt.flip_image_sequence.display_value && eachInt.dev_experience.display_value && eachInt.app_experience.display_value">
+                    <div class="dev-screenshot remove-padding col-md-9 col-xs-9">
+                        <img ng-src="{{eachInt.dev_experience.display_value}}" />
+                    </div>
+                    <div class="caption-appscreen">
+                        <div class="app-screenshot col-md-3 col-xs-3">
+                            <img ng-src="{{eachInt.app_experience.display_value}}" />
+                        </div>
+                        <div ng-if="eachInt.flip_image_sequence.display_value && eachInt.dev_experience.display_value && eachInt.app_experience.display_value" class="caption">{{eachInt.coupled_image_caption.display_value}}</div>
+                    </div>
+                </div>
+
+
+                <div class="dev-image col-md-12 col-xs-12" ng-if="eachInt.dev_experience.display_value && !eachInt.app_experience.display_value">
+                    <img ng-src="{{eachInt.dev_experience.display_value}}" />
+                </div>
+
+                <div class="app-image col-md-4 col-xs-4" ng-if="!eachInt.dev_experience.display_value && eachInt.app_experience.display_value">
+                    <img ng-src="{{eachInt.app_experience.display_value}}" />
+                </div>
+
+
+            </div>
+            <div ng-show="$root.userSelectedArtifact != 'Installation'" class="artifact-sections" ng-repeat="eachArtifactDetail in c.data.selectedArtifact.artifacts">
+                <div class="col-md-12 col-xs-12 text-top-image-bottom remove-padding" ng-show="eachArtifactDetail.display_layout.display_value == 'Text Top Image Bottom'">
+                    <div class="col-md-12 col-xs-12 remove-padding">
+
+                        <p class="content-text">
+                            {{eachArtifactDetail.text.display_value}}
+                        </p>
+                    </div>
+
+                    <div ng-show="eachArtifactDetail.dev_experience.display_value && !eachArtifactDetail.app_experience.display_value" class="col-md-12 col-xs-12 dev-image"><img ng-src={{eachArtifactDetail.dev_experience.display_value}} /></div>
+
+                    <div class="app-dev-images col-md-12 col-xs-12 remove-padding" ng-if="eachArtifactDetail.flip_image_sequence.display_value && eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value">
+                        <div class="dev-screenshot remove-padding col-md-9 col-xs-9">
+                            <img ng-src="{{eachArtifactDetail.dev_experience.display_value}}" />
+                        </div>
+                        <div class="caption-appscreen">
+                            <div class="app-screenshot col-md-3 col-xs-3">
+                                <img ng-src="{{eachArtifactDetail.app_experience.display_value}}" />
+                            </div>
+                            <div ng-if=" eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value" class="caption">{{eachArtifactDetail.coupled_image_caption.display_value}}</div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+
+                <div class="col-md-12 col-xs-12 text-top-image-bottom remove-padding" ng-show="eachArtifactDetail.display_layout.display_value == 'Top Image text Bottom'">
+                    <div ng-show="eachArtifactDetail.dev_experience.display_value && !eachArtifactDetail.app_experience.display_value" class="col-md-12 col-xs-12 remove-padding dev-image"><img ng-src={{eachArtifactDetail.dev_experience.display_value}} /></div>
+                    <div ng-show="!eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value" class="col-md-5 col-xs-5 app-image"><img ng-src={{eachArtifactDetail.app_experience.display_value}} /></div>
+
+                    <!--<div class="app-dev-images col-md-12 col-xs-12" ng-if="eachArtifactDetail.flip_image_sequence.display_value && eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value">
+                        <div class="dev-screenshot col-md-9 col-xs-9">
+                            <img ng-src="{{eachArtifactDetail.dev_experience.display_value}}" />
+                        </div>
+                        <div class="app-screenshot col-md-3 col-xs-3">
+                            <img ng-src="{{eachArtifactDetail.app_experience.display_value}}" />
+                        </div>
+                    </div>-->
+                    <div class="app-dev-images" ng-if=" eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value">
+                        <div class="dev-screenshot remove-padding col-md-9 col-xs-9">
+                            <img ng-src="{{eachArtifactDetail.dev_experience.display_value}}" />
+                        </div>
+                        <div class="caption-appscreen">
+                            <div class="app-screenshot col-md-3 col-xs-3">
+                                <img ng-src="{{eachArtifactDetail.app_experience.display_value}}" />
+                            </div>
+                            <div ng-if="eachArtifactDetail.flip_image_sequence.display_value && eachArtifactDetail.dev_experience.display_value && eachArtifactDetail.app_experience.display_value" class="caption">{{eachArtifactDetail.coupled_image_caption.display_value}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-xs-12 remove-padding">
+
+                        <p class="content-text">
+                            {{eachArtifactDetail.text.display_value}}
+                        </p>
+                    </div>
+
+
+
+
+                </div>
+                <div class="col-md-12 col-xs-12 text-right-image-left" ng-show="eachArtifactDetail.display_layout.display_value == 'Text right Image left'">
+
+                    <div class="col-md-6 col-xs-6"><img ng-src={{eachArtifactDetail.dev_experience.display_value}} /></div>
+                    <div class="text-part col-md-6 col-xs-6">
+                        <div>
+                            <p class="one-line-header">
+                                {{eachArtifactDetail.capability.display_value}}
+                            </p>
+                            <p class="content-text">
+                                {{eachArtifactDetail.text.display_value}}
+                            </p>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class=" text-right-image-left" ng-show="eachArtifactDetail.display_layout.display_value == 'Text left Image right'">
+                    <div class="text-part col-md-6 col-xs-6">
+                        <div>
+                            <p class="one-line-header">
+                                {{eachArtifactDetail.capability.display_value}}
+                            </p>
+                            <p class="content-text">
+                                {{eachArtifactDetail.text.display_value}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-6"><img ng-src={{eachArtifactDetail.dev_experience.display_value}} /></div>
+
+                </div>
+
+
+            </div>
+            <div ng-show="$root.userSelectedArtifact == 'Installation'" class="artifact-installation col-md-12 col-xs-12 repo-holder" ng-repeat="eachArtifactDetail in c.data.selectedArtifact.artifacts">
+                <!--<p class="content-text">
+                        {{eachArtifactDetail.text.display_value}}
+                    </p>
+                    <div class="each-repo" ng-repeat="repo in  eachArtifactDetail.appRepos">
+                        <a ng-href="{{repo.url.display_value}}" target="_blank">{{repo.url.display_value}}</a> | <span>{{repo.version.display_value}}</span>
+                    </div>
+                    <div class="divider">
+                        <a ng-href="/city?{{c.data.appData.repo_help.display_value}}" target="_blank">HELP</a>
+
+                    </div>-->
+                <div ng-bind-html="c.html"></div>
+                <div class="section">
+                    <div class="heading">Repository links</div>
+                    <div class="each-repo" ng-repeat="repo in c.appRepos">
+                        <a ng-href="{{repo.url.display_value}}" target="_blank">{{repo.short_description.display_value}}</a> | <span>{{repo.version.display_value}}</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="learn-more-mobile" ng-show="c.data.selectedArtifact.learnMore.length > 0">
+                <div class="learn-more-header"><span>Learn MOre</span></div>
+                <div class="learn-more-links">
+                    <a ng-href="{{eachlearn.url.display_value}}" ng-repeat="eachlearn in c.data.selectedArtifact.learnMore" target="_blank">» {{eachlearn.display_text.display_value}}</a>
                 </div>
             </div>
 
         </div>
-        <div class="image-switcher-arrows" ng-show="c.developSlideShow">
-            <img ng-class="{'disabled': c.slideIndex == 0}" class="rotate" src="back-icon.png" ng-click="c.previousSlide()" />
-            <img ng-class="{'disabled': c.slideIndex == c.mobileSlideShow.length-1}" src="back-icon.png" ng-click="c.nextSlide()" />
+        <div class="bottom-buttons">
+            <div class="position-them">
+                <div class="slide-btns side-left" ng-class="{'disabled': c.state == 0}" ng-show="c.state != 0" ng-click="c.previousState()">
+                    <span class="previous">»</span>
+                </div>
+                <div class="slide-btns back-btn" ng-show="c.state == 0" ng-click=" $root.startDetailDisplay = false">
+                    <span class="previous">BACK</span>
+                </div>
+                <div class="middle-btn" ng-click="c.go">
+                    <div class="center-align">
+                        <p class="artifact-text">{{c.stateTracker[c.state].value}}</p>
+                        <div class="dotstyle dotstyle-scaleup">
+                            <ul>
+                                <li ng-class="{'current': c.state == $index}" ng-repeat="eachState in c.stateTracker track by $index"><a ng-href="/city?sys_id={{c.searchObject.sys_id}}&artifact_type={{eachState.value}}">{{eachState.value}}</a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-btns side-right" ng-class="{'disabled': c.state == c.stateTracker.length-1}" ng-click="c.nextState()">
+                    <span class="next">»</span>
+                </div>
+            </div>
         </div>
     </div>
-</div>]]></template>
+</div>
+<!--testing something-->]]></template>
     </sp_widget>
 </record_update>

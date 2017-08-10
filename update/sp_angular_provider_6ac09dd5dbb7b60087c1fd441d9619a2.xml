@@ -2,7 +2,7 @@
 <record_update table="sp_angular_provider">
     <sp_angular_provider action="INSERT_OR_UPDATE">
         <name>setscreenheight</name>
-        <script><![CDATA[/*function($window) {
+        <script><![CDATA[function($window) {
       return {
           restrict: 'C',
           link: function(scope, element, attrs) {
@@ -16,9 +16,9 @@
              
           }
       }
-    }*/
+    }
 
-function($window) {
+/*function($window) {
       return {
           restrict: 'C',
           link: function(scope, element, attrs) {
@@ -35,13 +35,13 @@ function($window) {
              
           }
       };
-    }]]></script>
+    }*/]]></script>
         <sys_class_name>sp_angular_provider</sys_class_name>
         <sys_created_by>sush.chandrashekar</sys_created_by>
         <sys_created_on>2017-07-05 19:04:02</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>6ac09dd5dbb7b60087c1fd441d9619a2</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>7</sys_mod_count>
         <sys_name>setscreenheight</sys_name>
         <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
         <sys_policy/>
@@ -49,7 +49,7 @@ function($window) {
         <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
         <sys_update_name>sp_angular_provider_6ac09dd5dbb7b60087c1fd441d9619a2</sys_update_name>
         <sys_updated_by>sush.chandrashekar</sys_updated_by>
-        <sys_updated_on>2017-07-06 18:36:08</sys_updated_on>
+        <sys_updated_on>2017-07-18 23:43:23</sys_updated_on>
         <type>directive</type>
     </sp_angular_provider>
 </record_update>

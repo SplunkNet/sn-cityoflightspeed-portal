@@ -6,7 +6,7 @@
         <sys_class_name>sp_js_include</sys_class_name>
         <sys_created_by>sush.chandrashekar</sys_created_by>
         <sys_created_on>2017-06-19 22:44:51</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>13e92b84dbe37600c3beffa31d961916</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>trustUrl </sys_name>

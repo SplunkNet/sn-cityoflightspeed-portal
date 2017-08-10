@@ -4,7 +4,7 @@
         <active>true</active>
         <description/>
         <global>false</global>
-        <name>x_snc_city.COLS Components</name>
+        <name>x_snc_city.COLS Component</name>
         <script><![CDATA[(function(angular) {
     angular.module('cols-components', [])
         .run(function($rootScope, $location, $window, $timeout, $http, spUtil, glideUserSession, snRecordWatcher) {
@@ -52,10 +52,19 @@
                     return;
                 }
 
-                if (s.sys_id) {
+                if (s.sys_id && s.artifact_type) {
+
+                    $rootScope.$broadcast('showArtifactDetails', { 'sys_id': s.sys_id, 'artifact_type': s.artifact_type });
+                    return;
+                } else if (s.sys_id) {
                     $rootScope.$broadcast('showAppDetail', s.sys_id);
                     return;
+                } else {
+                    $rootScope.$broadcast('showHomePage', '');
+                    return;
                 }
+
+
 
 
                 // TODO Apply the page api
@@ -67,21 +76,21 @@
         $http.defaults.headers.common['X-UserToken'] = window.g_ck;
     });
 })(angular);]]></script>
-        <script_name>COLS Components</script_name>
+        <script_name>COLS Component</script_name>
         <sys_class_name>sys_ui_script</sys_class_name>
         <sys_created_by>sush.chandrashekar</sys_created_by>
         <sys_created_on>2017-06-30 00:14:37</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>063edf5bdba7f20087c1fd441d961990</sys_id>
-        <sys_mod_count>19</sys_mod_count>
-        <sys_name>x_snc_city.COLS Components</sys_name>
+        <sys_mod_count>23</sys_mod_count>
+        <sys_name>x_snc_city.COLS Component</sys_name>
         <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
         <sys_update_name>sys_ui_script_063edf5bdba7f20087c1fd441d961990</sys_update_name>
         <sys_updated_by>sush.chandrashekar</sys_updated_by>
-        <sys_updated_on>2017-07-05 03:28:00</sys_updated_on>
+        <sys_updated_on>2017-07-25 20:57:16</sys_updated_on>
         <use_scoped_format>false</use_scoped_format>
     </sys_ui_script>
 </record_update>

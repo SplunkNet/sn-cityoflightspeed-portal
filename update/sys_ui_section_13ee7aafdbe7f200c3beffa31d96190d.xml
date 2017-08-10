@@ -2,58 +2,86 @@
 <record_update>
     <sys_ui_section caption="Images" section_id="13ee7aafdbe7f200c3beffa31d96190d" sys_domain="global" table="x_snc_city_app" version="3" view="">
         <sys_ui_element action="INSERT_OR_UPDATE">
-            <element>app_bubble_image</element>
+            <element>mobile_banner</element>
             <position>0</position>
-            <sys_created_by>chuck.tomasi</sys_created_by>
-            <sys_created_on>2017-07-10 14:26:58</sys_created_on>
-            <sys_id>dc718a3adbff3a00c3beffa31d961934</sys_id>
+            <sys_created_by>sush.chandrashekar</sys_created_by>
+            <sys_created_on>2017-08-09 16:44:25</sys_created_on>
+            <sys_id>0e90c120db688300d6afffb41d9619a2</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="Images" display_value="Images" name="x_snc_city_app" sys_domain="global" view="Default view">13ee7aafdbe7f200c3beffa31d96190d</sys_ui_section>
-            <sys_updated_by>chuck.tomasi</sys_updated_by>
-            <sys_updated_on>2017-07-10 14:26:58</sys_updated_on>
+            <sys_updated_by>sush.chandrashekar</sys_updated_by>
+            <sys_updated_on>2017-08-09 16:44:25</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>app_bubble_image</element>
+            <position>1</position>
+            <sys_created_by>sush.chandrashekar</sys_created_by>
+            <sys_created_on>2017-08-09 16:44:25</sys_created_on>
+            <sys_id>8e90c120db688300d6afffb41d9619a2</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="Images" display_value="Images" name="x_snc_city_app" sys_domain="global" view="Default view">13ee7aafdbe7f200c3beffa31d96190d</sys_ui_section>
+            <sys_updated_by>sush.chandrashekar</sys_updated_by>
+            <sys_updated_on>2017-08-09 16:44:25</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>screenshot</element>
-            <position>1</position>
-            <sys_created_by>chuck.tomasi</sys_created_by>
-            <sys_created_on>2017-07-10 14:26:58</sys_created_on>
-            <sys_id>50718a3adbff3a00c3beffa31d961935</sys_id>
+            <position>2</position>
+            <sys_created_by>sush.chandrashekar</sys_created_by>
+            <sys_created_on>2017-08-09 16:44:25</sys_created_on>
+            <sys_id>0290c120db688300d6afffb41d9619a3</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="Images" display_value="Images" name="x_snc_city_app" sys_domain="global" view="Default view">13ee7aafdbe7f200c3beffa31d96190d</sys_ui_section>
-            <sys_updated_by>chuck.tomasi</sys_updated_by>
-            <sys_updated_on>2017-07-10 14:26:58</sys_updated_on>
+            <sys_updated_by>sush.chandrashekar</sys_updated_by>
+            <sys_updated_on>2017-08-09 16:44:25</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>.split</element>
-            <position>2</position>
-            <sys_created_by>chuck.tomasi</sys_created_by>
-            <sys_created_on>2017-07-10 14:26:58</sys_created_on>
-            <sys_id>d0718a3adbff3a00c3beffa31d961935</sys_id>
+            <position>3</position>
+            <sys_created_by>sush.chandrashekar</sys_created_by>
+            <sys_created_on>2017-08-09 16:44:25</sys_created_on>
+            <sys_id>8290c120db688300d6afffb41d9619a3</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="Images" display_value="Images" name="x_snc_city_app" sys_domain="global" view="Default view">13ee7aafdbe7f200c3beffa31d96190d</sys_ui_section>
-            <sys_updated_by>chuck.tomasi</sys_updated_by>
-            <sys_updated_on>2017-07-10 14:26:58</sys_updated_on>
+            <sys_updated_by>sush.chandrashekar</sys_updated_by>
+            <sys_updated_on>2017-08-09 16:44:25</sys_updated_on>
             <sys_user/>
             <type>.split</type>
         </sys_ui_element>
         <sys_ui_element action="INSERT_OR_UPDATE">
             <element>home_page_icon</element>
-            <position>3</position>
-            <sys_created_by>chuck.tomasi</sys_created_by>
-            <sys_created_on>2017-07-10 14:26:58</sys_created_on>
-            <sys_id>54718a3adbff3a00c3beffa31d961935</sys_id>
+            <position>4</position>
+            <sys_created_by>sush.chandrashekar</sys_created_by>
+            <sys_created_on>2017-08-09 16:44:25</sys_created_on>
+            <sys_id>0690c120db688300d6afffb41d9619a3</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="Images" display_value="Images" name="x_snc_city_app" sys_domain="global" view="Default view">13ee7aafdbe7f200c3beffa31d96190d</sys_ui_section>
-            <sys_updated_by>chuck.tomasi</sys_updated_by>
-            <sys_updated_on>2017-07-10 14:26:58</sys_updated_on>
+            <sys_updated_by>sush.chandrashekar</sys_updated_by>
+            <sys_updated_on>2017-08-09 16:44:25</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>app_bubble_image_mobile</element>
+            <position>5</position>
+            <sys_created_by>sush.chandrashekar</sys_created_by>
+            <sys_created_on>2017-08-09 16:44:25</sys_created_on>
+            <sys_id>8690c120db688300d6afffb41d9619a3</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="Images" display_value="Images" name="x_snc_city_app" sys_domain="global" view="Default view">13ee7aafdbe7f200c3beffa31d96190d</sys_ui_section>
+            <sys_updated_by>sush.chandrashekar</sys_updated_by>
+            <sys_updated_on>2017-08-09 16:44:25</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>
@@ -65,11 +93,11 @@
             <sys_class_name>sys_ui_section</sys_class_name>
             <sys_created_by>chuck.tomasi</sys_created_by>
             <sys_created_on>2017-06-30 16:35:22</sys_created_on>
-            <sys_customer_update>true</sys_customer_update>
+            <sys_customer_update>false</sys_customer_update>
             <sys_domain>global</sys_domain>
             <sys_domain_path>/</sys_domain_path>
             <sys_id>13ee7aafdbe7f200c3beffa31d96190d</sys_id>
-            <sys_mod_count>0</sys_mod_count>
+            <sys_mod_count>2</sys_mod_count>
             <sys_name>Images</sys_name>
             <sys_overrides/>
             <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
@@ -77,8 +105,8 @@
             <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
             <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
             <sys_update_name>sys_ui_section_13ee7aafdbe7f200c3beffa31d96190d</sys_update_name>
-            <sys_updated_by>chuck.tomasi</sys_updated_by>
-            <sys_updated_on>2017-06-30 16:35:22</sys_updated_on>
+            <sys_updated_by>sush.chandrashekar</sys_updated_by>
+            <sys_updated_on>2017-08-09 16:44:25</sys_updated_on>
             <sys_user/>
             <title>false</title>
             <view display_value="Default view" name="NULL">Default view</view>

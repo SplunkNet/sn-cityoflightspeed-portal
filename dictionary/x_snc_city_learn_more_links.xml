@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element label="Learn More Links" max_length="40" name="x_snc_city_learn_more_links" type="collection">
+        <element attributes=" ref_ac_columns_search=true,ref_auto_completer=AJAXTableCompleter,ref_ac_columns=app" label="App Artifact Type" max_length="32" name="app_artifact_type" reference="x_snc_city_app_artifacts_types" type="reference"/>
+        <element display="true" label="Display Text" max_length="200" name="display_text" type="string"/>
+        <element label="Order" max_length="40" name="order" type="integer"/>
+        <element label="Url" max_length="1024" name="url" type="url"/>
+        <index name="index">
+            <element name="app_artifact_type"/>
+        </index>
+    </element>
+</database>

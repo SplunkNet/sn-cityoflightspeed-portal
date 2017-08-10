@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
-        <client_script><![CDATA[function threeDBnnerCtrl($timeout, $location, $rootScope) {
+        <client_script><![CDATA[function threeDBnnerCtrl($timeout, $location, $rootScope, $sce, $window) {
     /* widget controller */
     var c = this;
+
     c.layerSelected = "";
     c.searchObject = $location.search();
+    $rootScope.showSideNav = false;
+
+    c.fbBtnType = 'hover';
+    c.objBtnStyle = {
+        div: {
+            "bottom": "90px",
+            "right": "68px"
+        },
+        button: {
+            "background-color": "#09639b",
+            "box-shadow": "0 1px 4px 2px rgba(0, 0, 0, 0.2)"
+        },
+        label: {
+            "color": "#ffffff"
+        }
+    };
 
     c.$onInit = function() {
         c.layer = c.data.homePageTexts.startingText;
+        c.testDesc = $sce.trustAsHtml(c.layer.description);
+        c.objBtnStyle.button["background-color"] = c.layer.background_gradient1;
+        $rootScope.$broadcast('fbStyleButton', c.fbBtnType, c.objBtnStyle);
     };
 
     c.hideDetail = function() {
@@ -19,33 +39,53 @@
     };
 
     c.layerClicked = function(layer, appdata) {
-        // debugger;
+
+        /*var objBtnStyle = {
+            "background-color": "transparent",
+            "box-shadow": "0 1px 4px 2px rgba(0, 0, 0, 0.2)"
+        }*/
         c.layerSelected = layer;
         if (layer == '100') {
             c.layerSelected = "";
             c.layer = c.data.homePageTexts.startingText;
+            c.objBtnStyle.button["background-color"] = c.layer.background_gradient1;
         }
         if (layer == '200') {
             c.layer = c.data.homePageTexts.red;
+            c.objBtnStyle.button["background-color"] = c.layer.background_gradient1;
         }
         if (layer == '300') {
             c.layer = c.data.homePageTexts.blue;
+            c.objBtnStyle.button["background-color"] = c.layer.background_gradient1;
         }
         if (layer == '400') {
             c.layer = c.data.homePageTexts.green;
+            c.objBtnStyle.button["background-color"] = c.layer.background_gradient1;
         }
         if (layer == '500') {
             c.layer = c.data.homePageTexts.purple;
+            c.objBtnStyle.button["background-color"] = c.layer.background_gradient1;
         }
         if (layer == 'details') {
             c.layer = appdata;
             c.layer.image = c.data.homePageTexts.startingText.image;
+            c.objBtnStyle.button["background-color"] = "transparent";
         }
+        c.layer.description = $sce.trustAsHtml(c.layer.description);
+        $rootScope.$broadcast('fbStyleButton', c.fbBtnType, c.objBtnStyle);
     };
 
 
     $rootScope.$on('switchLayer', function(event, data) {
-        c //.layerClicked('details', data);
+        $rootScope.showSideNav = true;
+    });
+
+    $rootScope.$on('hideDetail', function(event, data) {
+        c.hideDetail();
+    });
+
+    $rootScope.$on('showHomePage', function(event, data) {
+        c.hideDetail();
     });
 
 
@@ -60,300 +100,440 @@
         justify-content: center;
     }
     .unoverflow {
-        overflow: overlay !important;
+        overflow: auto !important;
+        height: 100% !important;
     }
-    .bg-detail {
-        background-image: linear-gradient(to bottom, #465da0, #080808) !important;
+}
+
+@-moz-document url-prefix() {
+    .unoverflow {
+        overflow: auto !important;
     }
-    .bg-home {
-        background-image: linear-gradient(#0B0F15, #2F70C6);
-    }
-    .darkerbg {
-        background-image: linear-gradient(#101522, #1B2540);
-    }
-    .move-down {
-        top: 150% !important;
-        .threeD-city {
-            img {
-                // animation-name: citymoveup;
-                // animation-timing-function: ease;
-                //animation-duration: 2s;
-                // transform: translate3d(0px, -20%, 0px);
-                // @media screen and (max-width: 1030px) {
-                //     animation-name: citymoveup1030;
-                //     transform: translate3d(0px, -28%, 0px);
-                // }
-                // @media screen and (max-width: 780px) {
-                //     animation-name: citymoveup780;
-                //     transform: translate3d(0px, -36%, 0px);
-                // }
-                // @media screen and (max-width: 700px) {
-                //     animation-name: citymoveup700;
-                //     transform: translate3d(0px, -52%, 0px);
-                // }
-                // @media screen and (max-width: 414px) {
-                //     animation-name: citymoveup414;
-                //     transform: translate3d(0px, -24%, 0px);
-                // }
-            }
+}
+
+.it-aint-ur-turn {
+    margin-bottom: 0px !important;
+    overflow: hidden !important;
+    min-height: auto !important;
+    position: absolute !important;
+}
+
+.bg-detail {
+    background-image: linear-gradient(to bottom, #465da0, #080808) !important;
+}
+
+.bg-home {
+    background-image: linear-gradient(#0B0F15, #2F70C6);
+}
+
+.darkerbg {
+    background-image: linear-gradient(#101522, #1B2540);
+}
+
+.move-down {
+    top: 150% !important;
+    .threeD-city {
+        img {
+            // animation-name: citymoveup;
+            // animation-timing-function: ease;
+            //animation-duration: 2s;
+            // transform: translate3d(0px, -20%, 0px);
+            // @media screen and (max-width: 1030px) {
+            //     animation-name: citymoveup1030;
+            //     transform: translate3d(0px, -28%, 0px);
+            // }
+            // @media screen and (max-width: 780px) {
+            //     animation-name: citymoveup780;
+            //     transform: translate3d(0px, -36%, 0px);
+            // }
+            // @media screen and (max-width: 700px) {
+            //     animation-name: citymoveup700;
+            //     transform: translate3d(0px, -52%, 0px);
+            // }
+            // @media screen and (max-width: 414px) {
+            //     animation-name: citymoveup414;
+            //     transform: translate3d(0px, -24%, 0px);
+            // }
         }
     }
-    .move-up {
-        top: 0px !important;
+}
+
+.move-up {
+    top: 0px !important;
+}
+
+.unoverflow-for-app-intro {
+    @media screen and (max-height: 700px) {
+        overflow: auto !important;
     }
-    .banner-encloser {
-        //background-image: linear-gradient(#0B0F15, #2F70C6);
-        position: relative;
-        height: 100%;
-        overflow: hidden;
-        .home-page {
+}
+
+.banner-encloser {
+    //background-image: linear-gradient(#0B0F15, #2F70C6);
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    .home-page {
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        //overflow: hidden;
+        @media screen and (max-width: 414px) {
+            //height: 55%;
+            //height: 55vh;
+        }
+        .moving-part {
+            height: 100%;
+            top: 0%;
             position: absolute;
-            top: 0px;
             width: 100%;
-            overflow: hidden;
+            transition: top 2s;
+        }
+        .threeD-city {
+            height: 75%;
             @media screen and (max-width: 414px) {
-                //height: 55%;
-                height: 55vh;
+                height: 71%;
             }
-            .moving-part {
+            img {
                 height: 100%;
-                top: 0%;
-                position: absolute;
-                width: 100%;
-                transition: top 2s;
-            }
-            .threeD-city {
-                height: 75%;
-                @media screen and (max-width: 414px) {}
-                img {
-                    height: 100%;
-                    @media screen and (max-width: 1030px) {
-                        height: 90%;
-                    }
-                    @media screen and (max-width: 780px) {
-                        height: 80%;
-                    }
-                    @media screen and (max-width: 700px) {
-                        height: 75%;
-                    }
-                    @media screen and (max-width: 414px) {
-                        height: 100%;
-                    }
+                width: auto;
+                @media screen and (max-width: 1030px) {
+                    height: 90%;
                 }
-                .template-included {
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    @media screen and (max-width: 414px) {
-                        align-items: flex-end;
-                    }
-                    .include-div {
-                        display: inline-block;
+                @media screen and (max-width: 780px) {
+                    height: 80%;
+                }
+                @media screen and (max-width: 700px) {
+                    height: 75%;
+                }
+                @media screen and (max-width: 414px) {
+                    height: 95%;
+                }
+            }
+            .template-included {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                @media screen and (max-width: 414px) {
+                    align-items: flex-end;
+                }
+                .include-div {
+                    display: inline-block;
+                    height: inherit;
+                    //width: initial;
+                    width: 100%;
+                    margin-left: auto;
+                    margin-right: auto;
+                    position: relative;
+                    .include-div-flex {
                         height: inherit;
-                        width: initial;
+                        //width: initial;
                         margin-left: auto;
                         margin-right: auto;
                         position: relative;
-                        .include-div-flex {
-                            height: inherit;
-                            //width: initial;
-                            margin-left: auto;
-                            margin-right: auto;
-                            position: relative;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        }
-                    }
-                }
-                .layer {
-                    position: absolute;
-                    background: transparent;
-                    width: 144px;
-                    height: 40px;
-                    left: auto;
-                    right: auto;
-                    margin-left: auto;
-                    margin-right: auto;
-                    left: 0;
-                    right: 0;
-                }
-                .each-app {
-                    position: absolute;
-                    width: 25%;
-                    @media screen and (max-width: 700px) {
-                        width: 20%;
-                    }
-                    @media screen and (max-width: 600px) {
-                        width: 14%;
-                    }
-                    &amp;.events {
-                        top: 7%;
-                        left: 8%;
-                        @media screen and (max-width: 1030px) {
-                            top: 12%;
-                            left: 10%;
-                        }
-                        @media screen and (max-width: 780px) {
-                            top: 16%;
-                            left: 10%;
-                        }
-                        @media screen and (max-width: 700px) {
-                            top: 21%;
-                            left: 15%;
-                        }
-                        @media screen and (max-width: 600px) {
-                            top: 24%;
-                            left: 20%;
-                        }
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                         @media screen and (max-width: 414px) {
-                            top: 11%;
-                            left: 14%;
-                            width: 21%;
-                        }
-                    }
-                    &amp;.banking {
-                        top: 10%;
-                        left: 69%;
-                        @media screen and (max-width: 1030px) {
-                            top: 12%;
-                            left: 69%;
-                        }
-                        @media screen and (max-width: 780px) {
-                            top: 16%;
-                            left: 69%;
-                        }
-                        @media screen and (max-width: 700px) {
-                            top: 22%;
-                            left: 69%;
-                        }
-                        @media screen and (max-width: 600px) {
-                            top: 25%;
-                            left: 69%;
-                        }
-                        @media screen and (max-width: 414px) {
-                            top: 12%;
-                            left: 68%;
-                            width: 20%;
-                        }
-                    }
-                    .baloon {
-                        .bubble-img {
-                            width: 100%;
+                            align-items: flex-end;
                         }
                     }
                 }
             }
-            .each-layer {
-                background-color: $welcome-to-city;
-                padding: 40px 110px;
-                clear: both;
-                z-index: 1300;
+            .layer {
+                position: absolute;
+                background: transparent;
+                width: 144px;
+                height: 40px;
+                left: auto;
+                right: auto;
+                margin-left: auto;
+                margin-right: auto;
+                left: 0;
+                right: 0;
+            }
+            .each-app {
+                position: absolute;
+                height: 25%;
+                @media screen and (max-width: 700px) {
+                    width: 20%;
+                }
+                @media screen and (max-width: 600px) {
+                    width: 14%;
+                }
+                &amp;.events {
+                    top: 10px;
+                    left: calc(50% - 230px);
+                    @media screen and (max-width: 1030px) {
+                      top: 25px;
+	                    left: calc(50% - 215px);
+                    }
+                    @media screen and (max-width: 780px) {
+                      top: 35px;
+                      left: calc(50% - 200px);
+                    }
+                    @media screen and (max-width: 700px) {
+                      top: 50px;
+                      left: calc(50% - 235px);
+                    }
+                    @media screen and (max-width: 600px) {
+                      
+                    }
+                    @media screen and (max-width: 425px) {
+                      top: 20px;
+                      left: calc(50% - 170px);
+                    }
+                    @media screen and (max-width: 414px) {
+                      top: 5px;
+                      left: calc(50% - 185px);
+                    }
+                    @media screen and (max-width: 375px) {
+                      top: 10px;
+                      left: calc(50% - 180px);
+                    }
+                  	@media screen and (max-width: 325px) {
+                      top: 0;
+                      left: calc(50% - 155px);
+                    }
+                                        
+                }
+                // @media screen and (max-width: 1030px) {
+                //     // top: 12%;
+                //     // left: 10%;
+                //     top: 5%;
+                //     left: 15%;
+                // }
+                &amp;.banking {
+                    top: 20px;
+                    left: calc(50% + 175px);
+                    @media screen and (max-width: 1030px) {
+                      top: 20px;
+                      left: calc(50% + 140px);
+                    }
+                    @media screen and (max-width: 780px) {
+                      top: 35px;
+                      left: calc(50% + 133px);
+                    }
+                    @media screen and (max-width: 700px) {
+                      top: 50px;
+                      left: calc(50% + 115px);
+                    }
+                    @media screen and (max-width: 600px) {
+                      
+                    }
+                    @media screen and (max-width: 425px) {
+                      top: 15px;
+                      left: calc(50% + 100px);
+                    }
+                    @media screen and (max-width: 414px) {
+                      top: 5px;
+                      left: calc(50% + 120px);
+                    }
+                    @media screen and (max-width: 375px) {
+                      top: 5px;
+                      left: calc(50% + 105px);
+                    }
+                    @media screen and (max-width: 325px) {
+                      top: 0;
+                      left: calc(50% + 90px);
+                    }
+                }
+                .baloon {
+                    height: 100%;
+                    .bubble-img {
+                        height: 100%;
+                      	width: auto;
+                        @media screen and (max-width: 780px) {
+                        }
+                        @media screen and (max-width: 700px) {
+                        }
+                        @media screen and (max-width: 425px) {
+                          height: 135px;
+                        }
+                        @media screen and (max-width: 414px) {
+                          height: 125px;
+                        }
+                      	@media screen and (max-width: 325px) {
+                        	height: 105px;
+                      	}
+                    }
+                }
+            }
+        }
+        .each-layer {
+            background-color: $welcome-to-city;
+            padding: 35px 110px;
+            clear: both;
+            z-index: 1300;
+            height: 100%;
+            color: #fff;
+            display: flex;
+            position: relative;
+            align-items: center;
+            letter-spacing: 1.5px;
+            justify-content: center;
+            @media screen and (max-width: 1250px) {
+                //height: 25%;
+                padding: 0px 40px;
+            }
+            @media screen and (max-width: 830px) {
+                //height: 25%;
+                padding: 0px 40px;
+            }
+            @media screen and (max-width: 770px) {
+                overflow: auto;
+            }
+            @media screen and (max-width: 414px) {
+                padding: 20px;
+            }
+            .virtual-div {
                 height: 100%;
-                color: #fff;
-                display: flex;
-                position: relative;
-                align-items: center;
-                justify-content: center;
                 @media screen and (max-width: 1250px) {
                     //height: 25%;
-                    padding: 0px 40px;
+                    height: 85%;
                 }
                 @media screen and (max-width: 830px) {
                     //height: 25%;
                     padding: 0px 40px;
                 }
+                @media screen and (max-width: 550px) {
+                    overflow: auto;
+                }
                 @media screen and (max-width: 414px) {
                     padding: 10px;
                 }
-                h3 {
-                    font-size: 32px;
-                    margin-top: 0px;
-                    font-weight: bold;
-                    @media screen and (max-width: 1110px) {
-                        font-size: 36px;
-                    }
-                    @media screen and (max-width: 1020px) {
-                        font-size: 26px;
-                    }
-                    @media screen and (max-width: 780px) {
-                        font-size: 20px;
-                    }
-                    @media screen and (max-height: 900px) {
-                        font-size: 24px;
-                    }
+                @media screen and (max-width: 414px) {
+                    height: 100%;
+                    padding: 0px;
+                }
+            }
+            h3 {
+                font-size: 36px;
+                margin-top: 0px;
+                font-weight: bold;
+                height: 17%;
+                @media screen and (max-width: 1110px) {
+                    font-size: 36px;
+                }
+                @media screen and (max-width: 1068px) {
+                    font-size: 26px;
+                }
+                @media screen and (max-width: 780px) {
+                    font-size: 20px;
+                }
+                @media screen and (max-height: 900px) {
+                    font-size: 24px;
+                }
+                @media screen and (max-width: 414px) {
+                    height: 35%;
+                    font-size: 22px !important;
+                    margin-top: 10px;
+                    font-weight: 600;
+                }
+                @media screen and (max-height: 1110px) {
+                    font-size: 28px;
+                }
+                @media screen and (max-height: 950px) {
+                    font-size: 24px;
+                }
+                @media screen and (max-height: 850px) {
+                    font-size: 22px;
+                }
+            }
+            .description {
+                height: 83%;
+                font-size: 24px;
+                font-weight: 300;
+                max-width: 991px;
+                @media screen and (max-width: 1068px) {
+                    font-size: 18px;
+                    max-width: 700px;
+                }
+                @media screen and (max-width: 900px) {
+                    font-size: 18px;
+                    max-width: 650px;
+                }
+                @media screen and (max-width: 780px) {
+                    font-size: 16px;
+                    max-width: 500px;
+                }
+                @media screen and (max-width: 414px) {
+                    font-size: 15px;
+                    padding: 0;
+                    height: 65%;
+                }
+                @media screen and (max-height: 1110px) {
+                    font-size: 20px;
+                }
+                @media screen and (max-height: 950px) {
+                    font-size: 18px;
+                }
+                @media screen and (max-height: 850px) {
+                    font-size: 15px;
                 }
                 p {
-                    font-size: 24px;
-                    font-weight: 300;
-                    @media screen and (max-width: 1020px) {
-                        font-size: 18px;
-                    }
-                    @media screen and (max-width: 900px) {
-                        font-size: 22px;
-                    }
-                    @media screen and (max-width: 780px) {
-                        font-size: 16px;
-                    }
+                    margin-bottom: 0px;
                 }
             }
-            .each-layer-parent {
-                //height: 33%;
-                height: 25%;
+        }
+        .each-layer-parent {
+            //height: 33%;
+            height: 25%;
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+            @media screen and (max-width: 414px) {
+                height: 29%;
+            }
+            .move-city-up {
                 position: absolute;
-                bottom: 0px;
-                @media screen and (max-width: 414px) {
-                    height: 45%;
-                }
-                .move-city-up {
-                    position: absolute;
-                    top: 100px;
-                    left: 0;
-                    right: 0;
-                    margin-left: auto;
-                    margin-right: auto;
-                    transition: top 2s;
-                    z-index: 1200;
-                    .exp {
-                        width: 50px;
-                        height: 50px;
-                        background-color: #101420;
-                        border-radius: 100%;
-                        line-height: 80px;
-                        text-align: center;
-                        vertical-align: middle;
-                        display: inline-block;
-                        .fa {
-                            color: #949595;
-                            display: flex;
-                            align-items: center;
-                            height: inherit;
-                            justify-content: center;
-                        }
+                top: 100px;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                transition: top 2s;
+                z-index: 1200;
+                .exp {
+                    width: 50px;
+                    height: 50px;
+                    background-color: #101420;
+                    border-radius: 100%;
+                    line-height: 80px;
+                    text-align: center;
+                    vertical-align: middle;
+                    display: inline-block;
+                    .fa {
+                        color: #949595;
+                        display: flex;
+                        align-items: center;
+                        height: inherit;
+                        justify-content: center;
                     }
                 }
             }
         }
     }
-    .banner {
-        height: 205%;
-        position: absolute;
-        transition: top 2s;
-        top: -105%;
-        z-index: 1000;
-        padding-left: 0px;
-        padding-right: 0px;
-        @media screen and (max-width: 414px) {
-            //height: 533px;
-        }
-        .clickable {}
-    }
-    // .consumerization-bg {
-    //     background:$consumerization-bg;
-    // }
 }
 
+.banner {
+    height: 205%;
+    position: absolute;
+    transition: top 2s;
+    top: -105%;
+    z-index: 1000;
+    padding-left: 0px;
+    padding-right: 0px;
+    @media screen and (max-width: 414px) {
+        //height: 533px;
+    }
+    .clickable {}
+}
+
+// .consumerization-bg {
+//     background:$consumerization-bg;
+// }
 @keyframes citymoveup {
     0% {
         transform: translate3d(0px, 0px, 0px);
@@ -468,18 +648,27 @@
 .details-injected {
     position: absolute;
     width: 100%;
+    min-height: 700px;
     top: 150%;
+    // min-height: 100%;
+    height: 100%;
     transition: top 2s;
+    // &amp;.translatez-for-sidebar {
+    //     transform: translateZ(0);
+    //     -webkit-transform: translateZ(0);
+    // }
 }
 
 .v58d22d87db2fb20087c1fd441d961904 {
-    height: 50%;
+    height: 95%;
     //background-image: linear-gradient(to bottom, #465da0, #080808);
     background-image: inherit;
-    @media screen and (max-width: 414px) {
-        height: 51%;
+    @media screen and (max-width: 768px) {
+        height: 100%;
     }
-}</css>
+}
+
+.side-nav {}</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
         <description/>
@@ -491,7 +680,7 @@
         <link/>
         <name>COLS 3D City</name>
         <option_schema/>
-        <public>false</public>
+        <public>true</public>
         <roles/>
         <script><![CDATA[(function() {
     /* populate the 'data' object */
@@ -499,13 +688,14 @@
     data.homePageTexts = {};
     data.appBubbles = [];
     data.colsAppDetail = $sp.getWidget('cols-app-details');
+
     var gr = new GlideRecord('x_snc_city_home');
     gr.addActiveQuery();
     gr.orderBy('order');
     gr.query();
     while (gr.next()) {
         var obj = {};
-        $sp.getRecordElements(obj, gr, 'head,order,sys_id,description,background_gradient1,background_gradient2,text_color,image,learn_more_text');
+        $sp.getRecordElements(obj, gr, 'head,order,sys_id,description,background_gradient1,background_gradient2,text_color,image,learn_more_text,cdn_image_url,cdn_domain_name,cdn_file_name');
         if (obj.order.display_value == '100') {
             data.homePageTexts.startingText = {};
             data.homePageTexts.startingText.head = obj.head.display_value;
@@ -513,7 +703,9 @@
             data.homePageTexts.startingText.background_gradient1 = obj.background_gradient1.display_value;
             data.homePageTexts.startingText.background_gradient2 = obj.background_gradient2.display_value;
             data.homePageTexts.startingText.text_color = obj.text_color.display_value;
-            data.homePageTexts.startingText.image = obj.image.display_value;
+            //data.homePageTexts.startingText.image = obj.image.display_value;
+
+            data.homePageTexts.startingText.image = obj.cdn_domain_name.display_value + obj.cdn_file_name.display_value;
         }
         if (obj.order.display_value == '200') {
             data.homePageTexts.red = {};
@@ -522,7 +714,9 @@
             data.homePageTexts.red.background_gradient1 = obj.background_gradient1.display_value;
             data.homePageTexts.red.background_gradient2 = obj.background_gradient2.display_value;
             data.homePageTexts.red.text_color = obj.text_color.display_value;
-            data.homePageTexts.red.image = obj.image.display_value;
+            //data.homePageTexts.red.image = obj.image.display_value;
+
+            data.homePageTexts.red.image = obj.cdn_domain_name.display_value + obj.cdn_file_name.display_value;
 
 
         }
@@ -533,7 +727,9 @@
             data.homePageTexts.blue.background_gradient1 = obj.background_gradient1.display_value;
             data.homePageTexts.blue.background_gradient2 = obj.background_gradient2.display_value;
             data.homePageTexts.blue.text_color = obj.text_color.display_value;
-            data.homePageTexts.blue.image = obj.image.display_value;
+            //data.homePageTexts.blue.image = obj.image.display_value;
+
+            data.homePageTexts.blue.image = obj.cdn_domain_name.display_value + obj.cdn_file_name.display_value;
 
         }
         if (obj.order.display_value == '400') {
@@ -543,7 +739,9 @@
             data.homePageTexts.green.background_gradient1 = obj.background_gradient1.display_value;
             data.homePageTexts.green.background_gradient2 = obj.background_gradient2.display_value;
             data.homePageTexts.green.text_color = obj.text_color.display_value;
-            data.homePageTexts.green.image = obj.image.display_value;
+            //data.homePageTexts.green.image = obj.image.display_value;
+
+            data.homePageTexts.green.image = obj.cdn_domain_name.display_value + obj.cdn_file_name.display_value;
 
         }
         if (obj.order.display_value == '500') {
@@ -553,7 +751,9 @@
             data.homePageTexts.purple.background_gradient1 = obj.background_gradient1.display_value;
             data.homePageTexts.purple.background_gradient2 = obj.background_gradient2.display_value;
             data.homePageTexts.purple.text_color = obj.text_color.display_value;
-            data.homePageTexts.purple.image = obj.image.display_value;
+            //data.homePageTexts.purple.image = obj.image.display_value;
+
+            data.homePageTexts.purple.image = obj.cdn_domain_name.display_value + obj.cdn_file_name.display_value;
         }
     }
 
@@ -562,7 +762,7 @@
     gr.query();
     while (gr.next()) {
         var obj = {};
-        $sp.getRecordElements(obj, gr, 'sys_id,flag_text,app_bubble_image');
+        $sp.getRecordElements(obj, gr, 'sys_id,flag_text,app_bubble_image,app_bubble_image_mobile');
         data.appBubbles.push(obj);
     }
 
@@ -573,35 +773,49 @@
         <sys_created_on>2017-06-07 18:48:19</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>acce3c10dbdfbe00c3beffa31d96190c</sys_id>
-        <sys_mod_count>1114</sys_mod_count>
+        <sys_mod_count>1482</sys_mod_count>
         <sys_name>COLS 3D City</sys_name>
         <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
         <sys_update_name>sp_widget_acce3c10dbdfbe00c3beffa31d96190c</sys_update_name>
-        <sys_updated_by>sush.chandrashekar</sys_updated_by>
-        <sys_updated_on>2017-07-14 20:25:56</sys_updated_on>
+        <sys_updated_by>chris.stoll</sys_updated_by>
+        <sys_updated_on>2017-08-10 22:29:07</sys_updated_on>
         <template><![CDATA[<div class="col-md-12 col-lg-12 col-xs-12 text-center threeD-city-banner">
     <!-- your widget template -->
-    <div class="banner-encloser setscreenheightmin" ng-class="{'bg-home': !$root.showDetail, 'darkerbg':c.layerSelected, 'bg-home': !c.layerSelected,'unoverflow bg-detail':$root.showDetail}">
-        <div class="home-page setscreenheight">
+    <div class="banner-encloser setscreenheightforhome" ng-class="{'bg-home': !$root.showDetail, 'darkerbg':c.layerSelected, 'bg-home': !c.layerSelected,'bg-detail':$root.showDetail , 'unoverflow':$root.userSelectedArtifact, 'unoverflow-for-app-intro':!$root.userSelectedArtifact && $root.showDetail}">
+        <div class="home-page setscreenheightforhome3dcity" ng-class="{'it-aint-ur-turn': $root.showDetail}">
             <div class="moving-part" ng-class="($root.showDetail ? 'move-down' : 'move-up')">
                 <div class="threeD-city col-md-12 col-xs-12" ng-class="(c.layerSelected ? 'darkerbg' : 'lighterbg')">
                     <!--<img src="{{c.initialimg}}" />-->
                     <div class="template-included">
                         <div class="include-div">
                             <div class="include-div-flex" ng-include="'COLS-City-image-lightson'"></div>
-                            <div class="each-app {{bubbles.flag_text.display_value}}" ng-repeat="bubbles in c.data.appBubbles">
+                            <div class="bubble-containers">
+                                <div class="each-app {{bubbles.flag_text.display_value}}" ng-repeat="bubbles in c.data.appBubbles">
 
-                                <div class="baloon">
+                                    <div class="baloon hidden-xs">
+                                        <!--
+                                        <a href="?sys_id={{bubbles.sys_id.display_value}}">
+                                            <img class="bubble-img" src="{{bubbles.app_bubble_image.display_value}}" />
+                                        </a>-->
+                                        <a href="?sys_id={{bubbles.sys_id.display_value}}">
+                                            <img class="bubble-img" src="{{bubbles.app_bubble_image_mobile.display_value}}" />
+                                        </a>
 
-                                    <a href="?sys_id={{bubbles.sys_id.display_value}}">
-                                        <img class="bubble-img" src="{{bubbles.app_bubble_image.display_value}}" />
-                                    </a>
+
+
+                                    </div>
+                                    <div class="baloon baloon-mobile visible-xs">
+
+                                        <a href="?sys_id={{bubbles.sys_id.display_value}}">
+                                            <img class="bubble-img" src="{{bubbles.app_bubble_image_mobile.display_value}}" />
+                                        </a>
 
 
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -616,11 +830,11 @@
 
                 <div class="each-layer-parent text-center" ng-class="{'each-layer-with-details':$root.showDetail}">
                     <div class="each-layer" ng-style="{'background-image': 'linear-gradient(to bottom, '+c.layer.background_gradient1 +','+ c.layer.background_gradient2+')'}">
-                        <div>
+                        <div class="virtual-div">
                             <h3>{{c.layer.head}}</h3>
-                            <p>
-                                {{c.layer.description}}
-                            </p>
+                            <div class="description" ng-bind-html="c.layer.description">
+
+                            </div>
                         </div>
                     </div>
                     <div class="move-city-up " ng-class="{'move-up':$root.showDetail}">
@@ -635,10 +849,14 @@
 
 
         </div>
-        <div class="details-injected" ng-class="($root.showDetail ? 'move-up' : 'move-down')">
-            <img ng-click="c.hideDetail()" src="back_to_city.png" />
+        <div class="details-injected" ng-class="($root.showDetail ? 'move-up' : 'move-down translatez-for-sidebar')">
+
             <sp-widget widget="c.data.colsAppDetail"></sp-widget>
         </div>
-    </div>]]></template>
+
+
+
+    </div>
+</div>]]></template>
     </sp_widget>
 </record_update>

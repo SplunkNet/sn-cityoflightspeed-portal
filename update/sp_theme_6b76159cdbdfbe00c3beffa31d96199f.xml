@@ -14,12 +14,21 @@ $integration-learn-bg:#319e58;
 $visibility-bg:#6A3075;
 $visibility-learn-bg:#7d2770;
 $baloon-color:#E1A037;
+$screen-sm:769px;
 div[ng-repeat="column in columns"] {
     padding: 0px;
 }
 
+body {
+    background: #000;
+}
+
 section.page {
     padding-top: 0px !important;
+}
+
+.remove-padding {
+    padding: 0px !important;
 }</css_variables>
         <footer display_value="COLS Footer">3e19dddcdbdfbe00c3beffa31d96194c</footer>
         <footer_fixed>true</footer_fixed>
@@ -29,9 +38,9 @@ section.page {
         <sys_class_name>sp_theme</sys_class_name>
         <sys_created_by>sush.chandrashekar</sys_created_by>
         <sys_created_on>2017-06-07 20:24:15</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>6b76159cdbdfbe00c3beffa31d96199f</sys_id>
-        <sys_mod_count>20</sys_mod_count>
+        <sys_mod_count>27</sys_mod_count>
         <sys_name>City Of LightSpeed</sys_name>
         <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
         <sys_policy/>
@@ -39,6 +48,6 @@ section.page {
         <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
         <sys_update_name>sp_theme_6b76159cdbdfbe00c3beffa31d96199f</sys_update_name>
         <sys_updated_by>sush.chandrashekar</sys_updated_by>
-        <sys_updated_on>2017-07-06 17:26:43</sys_updated_on>
+        <sys_updated_on>2017-08-03 22:17:57</sys_updated_on>
     </sp_theme>
 </record_update>

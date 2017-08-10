@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_page">
+    <sp_page action="INSERT_OR_UPDATE">
+        <css/>
+        <id>col_temp_chris</id>
+        <internal>false</internal>
+        <public>true</public>
+        <roles/>
+        <short_description/>
+        <sys_class_name>sp_page</sys_class_name>
+        <sys_created_by>chris.stoll</sys_created_by>
+        <sys_created_on>2017-07-19 22:37:06</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>31d78635db088300d6afffb41d961993</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>col_temp_chris</sys_name>
+        <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+        <sys_update_name>sp_page_31d78635db088300d6afffb41d961993</sys_update_name>
+        <sys_updated_by>chris.stoll</sys_updated_by>
+        <sys_updated_on>2017-07-20 14:02:30</sys_updated_on>
+        <title>z - COL Temp Chris</title>
+    </sp_page>
+    <sys_translated_text action="delete_multiple" query="documentkey=31d78635db088300d6afffb41d961993"/>
+</record_update>

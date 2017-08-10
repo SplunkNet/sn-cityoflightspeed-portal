@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_ng_template">
+    <sp_ng_template action="INSERT_OR_UPDATE">
+        <id>cols-svg</id>
+        <sp_widget display_value="COLS Header">d92d3070db27b600c3beffa31d961995</sp_widget>
+        <sys_class_name>sp_ng_template</sys_class_name>
+        <sys_created_by>sush.chandrashekar</sys_created_by>
+        <sys_created_on>2017-08-09 16:56:51</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>1f438560db688300d6afffb41d9619ad</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>cols-svg</sys_name>
+        <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+        <sys_update_name>sp_ng_template_1f438560db688300d6afffb41d9619ad</sys_update_name>
+        <sys_updated_by>sush.chandrashekar</sys_updated_by>
+        <sys_updated_on>2017-08-09 17:20:09</sys_updated_on>
+        <template><![CDATA[<svg width="12px" height="12px" viewBox="0 0 12 12" style="display: none;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <symbol id="close">
+    <g id="Page-1"  stroke-width="1" fill-rule="evenodd">
+        <g id="COL-HOME-SMALL" transform="translate(-326.000000, -67.000000)"  fill-rule="nonzero">
+            <g id="close-icon" transform="translate(327.000000, 67.000000)">
+                <path d="M10.1391304,10.8086957 L5.35652174,6.02608696 C5.06956522,5.73913043 5.06956522,5.28478261 5.35652174,4.99782609 L10.1391304,0.215217391 L10.473913,0.55 L5.69130435,5.3326087 C5.59565217,5.42826087 5.59565217,5.59565217 5.69130435,5.69130435 L10.473913,10.473913 L10.1391304,10.8086957 Z" id="Shape"></path>
+                <path d="M0.382608696,10.8086957 L0.047826087,10.473913 L4.83043478,5.69130435 C4.92608696,5.59565217 4.92608696,5.42826087 4.83043478,5.3326087 L0.047826087,0.55 L0.382608696,0.215217391 L5.16521739,4.99782609 C5.45217391,5.28478261 5.45217391,5.73913043 5.16521739,6.02608696 L0.382608696,10.8086957 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+    </symbol>
+</svg>
+
+
+<svg id="close-icon" style="display: none;" width="12px" height="12px" viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
+    <title>close-icon@3x</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="COL-HOME-SMALL" transform="translate(-326.000000, -67.000000)" stroke="#387FD4" fill-rule="nonzero" fill="#387FD4">
+            <g id="close-icon" transform="translate(327.000000, 67.000000)">
+                <path d="M10.1391304,10.8086957 L5.35652174,6.02608696 C5.06956522,5.73913043 5.06956522,5.28478261 5.35652174,4.99782609 L10.1391304,0.215217391 L10.473913,0.55 L5.69130435,5.3326087 C5.59565217,5.42826087 5.59565217,5.59565217 5.69130435,5.69130435 L10.473913,10.473913 L10.1391304,10.8086957 Z" id="Shape"></path>
+                <path d="M0.382608696,10.8086957 L0.047826087,10.473913 L4.83043478,5.69130435 C4.92608696,5.59565217 4.92608696,5.42826087 4.83043478,5.3326087 L0.047826087,0.55 L0.382608696,0.215217391 L5.16521739,4.99782609 C5.45217391,5.28478261 5.45217391,5.73913043 5.16521739,6.02608696 L0.382608696,10.8086957 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+]]></template>
+    </sp_ng_template>
+</record_update>

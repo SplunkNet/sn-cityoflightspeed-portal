@@ -12,7 +12,7 @@
             <sys_class_name>sys_documentation</sys_class_name>
             <sys_created_by>sush.chandrashekar</sys_created_by>
             <sys_created_on>2017-07-11 18:00:49</sys_created_on>
-            <sys_customer_update>true</sys_customer_update>
+            <sys_customer_update>false</sys_customer_update>
             <sys_id>92fb7bc3db7b7a0087c1fd441d96195d</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_name>App gradient 1</sys_name>

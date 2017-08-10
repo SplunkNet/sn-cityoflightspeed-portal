@@ -21,7 +21,7 @@
         <sys_class_name>sys_db_object</sys_class_name>
         <sys_created_by>chuck.tomasi</sys_created_by>
         <sys_created_on>2017-06-21 14:18:02</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>e6098838db27b60087c1fd441d961944</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>ServiceNow version</sys_name>

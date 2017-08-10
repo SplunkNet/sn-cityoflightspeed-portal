@@ -6,7 +6,7 @@
         <sys_class_name>m2m_sp_widget_dependency</sys_class_name>
         <sys_created_by>sush.chandrashekar</sys_created_by>
         <sys_created_on>2017-07-11 02:46:40</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>27bae4cbdbf37a0087c1fd441d961947</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>trustUrl .COLS App Details</sys_name>

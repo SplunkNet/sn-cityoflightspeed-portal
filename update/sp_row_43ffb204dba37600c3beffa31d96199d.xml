@@ -8,7 +8,7 @@
         <sys_class_name>sp_row</sys_class_name>
         <sys_created_by>sush.chandrashekar</sys_created_by>
         <sys_created_on>2017-06-19 19:41:14</sys_created_on>
-        <sys_customer_update>true</sys_customer_update>
+        <sys_customer_update>false</sys_customer_update>
         <sys_id>43ffb204dba37600c3beffa31d96199d</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name>2</sys_name>

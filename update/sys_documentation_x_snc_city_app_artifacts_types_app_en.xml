@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update>
+    <sys_documentation element="app" label="App" language="en" table="x_snc_city_app_artifacts_types">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>app</element>
+            <help/>
+            <hint/>
+            <label>App</label>
+            <language>en</language>
+            <name>x_snc_city_app_artifacts_types</name>
+            <plural>Apps</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>sush.chandrashekar</sys_created_by>
+            <sys_created_on>2017-07-19 22:49:49</sys_created_on>
+            <sys_customer_update>true</sys_customer_update>
+            <sys_id>fdda0eb5db088300d6afffb41d961979</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>App</sys_name>
+            <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+            <sys_update_name>sys_documentation_x_snc_city_app_artifacts_types_app_en</sys_update_name>
+            <sys_updated_by>sush.chandrashekar</sys_updated_by>
+            <sys_updated_on>2017-07-19 22:49:49</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>
