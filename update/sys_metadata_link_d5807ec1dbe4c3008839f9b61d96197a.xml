@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_metadata_link">
+    <sys_metadata_link action="INSERT_OR_UPDATE">
+        <directory>update</directory>
+        <documentkey>e17e2e81dbe4c3008839f9b61d96198d</documentkey>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_attachment">
+    <sys_attachment action="INSERT_OR_UPDATE">
+        <average_image_color>#c7d6d3</average_image_color>
+        <compressed>true</compressed>
+        <content_type>image/jpeg</content_type>
+        <file_name>GitHub-Fork.JPG</file_name>
+        <image_height>76</image_height>
+        <image_width>214</image_width>
+        <size_bytes>8431</size_bytes>
+        <size_compressed>6810</size_compressed>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2017-08-11 14:01:23</sys_created_on>
+        <sys_id>e17e2e81dbe4c3008839f9b61d96198d</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2017-08-11 14:01:24</sys_updated_on>
+        <table_name>kb_knowledge</table_name>
+        <table_sys_id>e3224c8edb0c8300d6afffb41d9619ca</table_sys_id>
+    </sys_attachment>
+</record_update>
+]]></payload>
+        <sys_class_name>sys_metadata_link</sys_class_name>
+        <sys_created_by>chuck.tomasi</sys_created_by>
+        <sys_created_on>2017-08-11 14:10:23</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>d5807ec1dbe4c3008839f9b61d96197a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>GitHub-Fork.JPG</sys_name>
+        <sys_package display_value="City" source="x_snc_city">75d4ebaedb033e00c3beffa31d9619d8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="City">75d4ebaedb033e00c3beffa31d9619d8</sys_scope>
+        <sys_update_name>sys_metadata_link_d5807ec1dbe4c3008839f9b61d96197a</sys_update_name>
+        <sys_updated_by>chuck.tomasi</sys_updated_by>
+        <sys_updated_on>2017-08-11 14:10:23</sys_updated_on>
+        <tablename>sys_attachment</tablename>
+    </sys_metadata_link>
+</record_update>
